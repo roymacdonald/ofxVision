@@ -33,8 +33,6 @@ public:
         
         if(ofIsFloatEqual(0.0f, maxValue - minValue)){ return 0; } // protect from zero division
         
-//        float colorRange = 1;
-//        return (((CGFloat(truncating: value) - minValue) * colorRange) / facePoseRange)
         return ofMap(value, minValue, maxValue, 0, 1, true);
     }
     
