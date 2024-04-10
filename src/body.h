@@ -1,47 +1,44 @@
-////
-////  hand.h
-////  CoreMLHand
-////
-////  Created by lingdong on 10/19/21.
-////  based on https://github.com/pierdr/ofxiosfacetracking
-////       and https://github.com/pambudi02/objc_handgesture
 //
+//  hand.h
+//  CoreMLHand
 //
-//#ifndef body_h
-//#define body_h
-//
-//#include "ofMain.h"
-//#import <Foundation/Foundation.h>
-//#import <Vision/Vision.h>
-//#import <AVKit/AVKit.h>
-//
-//#include "constants.h"
-//
-//
-//class BODY;
-//
-//@interface Body:NSObject<AVCaptureVideoDataOutputSampleBufferDelegate>{
-//  AVCaptureSession*           session;
-//  AVCaptureVideoDataOutput*   videoDataOutput;
-//  AVCaptureDevice*            captureDevice;
-//}
-//-(NSArray*)detect:(CGImageRef)image;
-//@end
-//
-//class BODY{
-//public:
-//  BODY();
-//  void detect(ofPixels image);
-//  CGImageRef CGImageRefFromOfPixels( ofPixels & img, int width, int height, int numberOfComponents );
-//
-//  ofVec3f detections[MAX_DET][BODY_N_PART];
-//  float scores      [MAX_DET];
-//  int n_det = 0;
-//  
-//protected:
-//  
-// Body* tracker;
-//
-//};
-//
+//  Created by lingdong on 10/19/21.
+//  based on https://github.com/pierdr/ofxiosfacetracking
+//       and https://github.com/pambudi02/objc_handgesture
+
+
+#pragma once
+
+#import <Foundation/Foundation.h>
+
+#include "ofxVisionDetections.h"
+
+
+namespace ofxVision{
+class Body{
+public:
+//    Body();
+    void processResults(NSArray*  results, float imgWidth, float imgHeight);
+    
+//    std::vector<std::vector<ofxVision::PointDetection >> detections;
+    std::vector<ofxVision::PointsDetection> detections;
+    //  ofVec3f detections[MAX_DET][BODY_N_PART];
+//    std::vector<float> scores;
+    //  int n_det = 0;
+    
+    void draw(){
+        for(auto & d: detections){
+//            d.draw(true, true, false, false);
+        }
+    }
+    
+protected:
+    
+//    void setDetection(size_t index, VNRecognizedPoint * point, float imgWidth, float imgHeight);
+    
+    
+//    Body* tracker;
+    
+};
+}
 //#endif /* body_h */

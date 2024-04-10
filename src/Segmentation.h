@@ -16,12 +16,18 @@
 @interface Segmentation
 : NSObject
 {
-//    VNDetectFaceLandmarksRequest* facePoseRequest;
+    VNDetectFaceLandmarksRequest* facePoseRequest;
     VNGeneratePersonSegmentationRequest* segmentationRequest;
     VNSequenceRequestHandler *handler;
+    float _quality;
 }
+-(NSArray * ) faceResults;
+-(void) setQualityLevel:(int)quality;
 
 -(CVPixelBufferRef)detect:(CGImageRef)image;
+
+
+
 
 @end
 
