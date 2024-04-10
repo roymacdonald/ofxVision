@@ -23,7 +23,7 @@
         
         NSError *error =nil;
         
-        
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_13_0)
         [MLModel compileModelAtURL:[NSURL fileURLWithPath:s]
                                     completionHandler:^(NSURL *compiledModelURL, NSError *error){
             if (error) {
@@ -32,6 +32,22 @@
             [self loadModel:compiledModelURL];
             
         }];
+        
+#else
+        
+        NSURL *compiledModelURL = [MLModel compileModelAtURL:[NSURL fileURLWithPath:s] error:&error];
+        if (error) {
+            NSLog(@"ObjectRecognition compile MLModel Error: %@", [error localizedDescription]);
+            return nil;
+        }
+        
+        if(![self loadModel:compiledModelURL]){
+            return nil;
+        }
+            
+        
+        
+#endif
 
 
         handler = [[VNSequenceRequestHandler alloc] init];
