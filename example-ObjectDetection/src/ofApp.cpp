@@ -37,6 +37,21 @@ void ofApp::update(){
           }
       }
       //*/
+      /*
+      if(detection.recognizeObjects){
+          
+          
+          for(auto& object : detection.getObjectDetections().detections){
+              /// you can filter here based on any of the following
+              object.label; //std::string
+              object.rect; // ofRectangle // IMPORTANT. the values of these are normalized. you need to multiply by the size of the image in order to get it in pixelspace.
+              object.score; // float. I think it is normalized. higher values mean more possibility that the object is the one in the label
+          }
+          
+          
+      }
+      
+   //*/
   }
 }
 
