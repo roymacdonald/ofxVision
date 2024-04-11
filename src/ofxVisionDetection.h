@@ -40,6 +40,12 @@ public:
     ofxVision::RectsCollection objectDetections;
     
     
+    const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
+    const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
+    const ofxVision::RectsCollection& getTextResults(){return textResults;}
+    const ofxVision::PointsCollection& getHandResults(){return handResults;}
+    const ofxVision::FaceDetectionsCollection& getFaceResults(){return faceResults;}
+    
 protected:
     
     
