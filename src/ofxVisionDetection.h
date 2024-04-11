@@ -37,9 +37,9 @@ public:
     
     bool loadModel(const std::string& modelPath);
     
-    ofxVision::RectsCollection objectDetections;
     
     
+    const ofxVision::RectsCollection& getObjectDetections(){return objectDetections;}
     const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
     const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
     const ofxVision::RectsCollection& getTextResults(){return textResults;}
@@ -68,6 +68,9 @@ protected:
     void * objectRecognition;
     void * detection;
 #endif
+    
+    
+    ofxVision::RectsCollection objectDetections;
     
     //    std::vector<glm::vec3> points;
         ofxVision::RectsCollection  animalResults;
