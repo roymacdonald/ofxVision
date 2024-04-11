@@ -5,17 +5,206 @@
 //  Created by Roy Macdonald on 20-03-24.
 //
 #include "ofxVisionDetection.h"
+
 #include "ofxVisionHelpers.h"
 
 //#pragma clang diagnostic ignored "-Wunguarded-availability"
 
+
+#ifdef OFX_VISION_ENABLE_DETECTION
+void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecognizedPoint * point){
+    points.setPoint(index, point.location.x, point.location.y, point.confidence);
+}
+
+    void processAnimalResults(NSArray*  source, ofxVision::RectsCollection&  dest){
+        
+       dest.detections.clear();
+       for(VNRecognizedObjectObservation *observation in source){
+           // CGFloat x = imgWidth*observation.boundingBox.origin.x;
+           // CGFloat y = imgHeight*(1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
+           // CGFloat w = imgWidth*observation.boundingBox.size.width;
+           // CGFloat h = imgHeight*observation.boundingBox.size.height;
+    //        int N = 0;
+    
+           dest.detections.push_back(ofxVision::RectDetection(ofxVisionHelper::toOf(observation.boundingBox), observation.confidence) );
+    
+           for (int i = 0; i < observation.labels.count; i++){
+               std::string text = [observation.labels[i].identifier UTF8String];
+               if(i < observation.labels.count -1){
+                   text += ", ";
+               }
+               dest.detections.back().label += text;
+           }
+       }
+        
+    
+    }
+    
+    
+//------------------------------------------------------------------------------------------------------------------------
+    void processFaceResults(NSArray*  source, ofxVision::FaceDetectionsCollection& dest){
+        auto & faces = dest.detections;
+        faces.clear();
+        for(VNFaceObservation *observation in source){
+    
+                auto r = ofxVisionHelper::toOf(observation.boundingBox);
+            
+                faces.push_back({});
+                faces.back().orientation.x = 0;
+                faces.back().orientation.y = [observation.yaw floatValue];
+                faces.back().orientation.z = [observation.roll floatValue];
+
+                VNFaceLandmarkRegion2D* landmarks = observation.landmarks.allPoints;
+                const CGPoint * points = landmarks.normalizedPoints;
+                for (int i = 0; i < landmarks.pointCount; i++){
+                    faces.back().points[i].x = points[i].x * r.width + r.x;
+                    faces.back().points[i].y = (1-points[i].y) * r.height + r.y;
+                    faces.back().points[i].z = [landmarks.precisionEstimatesPerPoint[i] floatValue];
+                }
+
+                faces.back().updateRect();
+                faces.back().score = observation.confidence;
+        }
+    }
+    
+
+
+
+//    //------------------------------------------------------------------------------------------------------------------------
+//    void setDetection(std::vector<ofxVision::PointsDetection>& detections, size_t index, VNRecognizedPoint * point){
+//        detections.back().setPoint(index, point.location.x, point.location.y, point.confidence);
+//    }
+    
+    //------------------------------------------------------------------------------------------------------------------------
+    void processBodyResults(NSArray*  source, ofxVision::PointsCollection& dest){
+        NSError *err;
+        
+        dest.detections.clear();
+        
+        for(VNHumanBodyPoseObservation *observation in source){
+            NSDictionary <VNHumanBodyPoseObservationJointName, VNRecognizedPoint *> *allPts = [observation recognizedPointsForJointsGroupName:VNHumanBodyPoseObservationJointsGroupNameAll error:&err];
+            if(err){
+                NSLog(@"ofxVisionResults::processBodyResults Error: %@", [err localizedDescription]);
+                continue;
+            }
+
+
+            dest.detections.emplace_back(ofxVision::PointsDetection(BODY_N_PART));
+            auto & body = dest.detections.back();
+
+            body.score = observation.confidence;
+            
+            setPoint(body, BODY_NOSE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameNose] );
+            setPoint(body, BODY_LEFTEYE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftEye] );
+            setPoint(body, BODY_RIGHTEYE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightEye] );
+            setPoint(body, BODY_LEFTEAR  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftEar] );
+            setPoint(body, BODY_RIGHTEAR  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightEar] );
+            setPoint(body, BODY_LEFTWRIST  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftWrist] );
+            setPoint(body, BODY_RIGHTWRIST  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightWrist] );
+            setPoint(body, BODY_LEFTELBOW  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftElbow] );
+            setPoint(body, BODY_RIGHTELBOW  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightElbow] );
+            setPoint(body, BODY_LEFTSHOULDER  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftShoulder] );
+            setPoint(body, BODY_RIGHTSHOULDER  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightShoulder] );
+            setPoint(body, BODY_LEFTHIP  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftHip] );
+            setPoint(body, BODY_RIGHTHIP  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightHip] );
+            setPoint(body, BODY_LEFTKNEE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftKnee] );
+            setPoint(body, BODY_RIGHTKNEE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightKnee] );
+            setPoint(body, BODY_LEFTANKLE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameLeftAnkle] );
+            setPoint(body, BODY_RIGHTANKLE  , [allPts objectForKey:VNHumanBodyPoseObservationJointNameRightAnkle] );
+            
+            body.updateRect();
+
+        }
+    }
+    
+    
+    //------------------------------------------------------------------------------------------------------------------------
+    void processHandResults(NSArray*  source, ofxVision::PointsCollection& dest){
+     
+
+            //  CGImageRef image = CGImageRefFromOfPixels(pix,(int)pix.getWidth(),(int)pix.getHeight(),(int)pix.getNumChannels());
+        //    NSArray* arr = [tracker detect:image];
+            NSError *err;
+            
+            dest.detections.clear();
+        //    n_det = 0;
+            for(VNHumanHandPoseObservation *observation in source){
+                NSDictionary <VNHumanHandPoseObservationJointName, VNRecognizedPoint *> *allPts = [observation recognizedPointsForJointsGroupName:VNHumanHandPoseObservationJointsGroupNameAll error:&err];
+                
+                if(err){
+                    NSLog(@"ofxVisionResults::processHandResults Error: %@", [err localizedDescription]);
+                    continue;
+                }
+
+
+                dest.detections.push_back(ofxVision::PointsDetection(HAND_N_PART));
+                auto & hand = dest.detections.back();
+
+                hand.score = observation.confidence;
+
+                
+                setPoint(hand, HAND_WRIST, [allPts objectForKey:VNHumanHandPoseObservationJointNameWrist    ]);
+                setPoint(hand, HAND_THUMB0, [allPts objectForKey:VNHumanHandPoseObservationJointNameThumbCMC ]);
+                setPoint(hand, HAND_THUMB1, [allPts objectForKey:VNHumanHandPoseObservationJointNameThumbMP  ]);
+                setPoint(hand, HAND_THUMB2, [allPts objectForKey:VNHumanHandPoseObservationJointNameThumbIP  ]);
+                setPoint(hand, HAND_THUMB3, [allPts objectForKey:VNHumanHandPoseObservationJointNameThumbTip ]);
+                setPoint(hand, HAND_INDEX0, [allPts objectForKey:VNHumanHandPoseObservationJointNameIndexMCP ]);
+                setPoint(hand, HAND_INDEX1, [allPts objectForKey:VNHumanHandPoseObservationJointNameIndexPIP ]);
+                setPoint(hand, HAND_INDEX2, [allPts objectForKey:VNHumanHandPoseObservationJointNameIndexDIP ]);
+                setPoint(hand, HAND_INDEX3, [allPts objectForKey:VNHumanHandPoseObservationJointNameIndexTip ]);
+                setPoint(hand, HAND_MIDDLE0,[allPts objectForKey:VNHumanHandPoseObservationJointNameMiddleMCP] );
+                setPoint(hand, HAND_MIDDLE1,[allPts objectForKey:VNHumanHandPoseObservationJointNameMiddlePIP]);
+                setPoint(hand, HAND_MIDDLE2,[allPts objectForKey:VNHumanHandPoseObservationJointNameMiddleDIP]);
+                setPoint(hand, HAND_MIDDLE3,[allPts objectForKey:VNHumanHandPoseObservationJointNameMiddleTip]);
+                setPoint(hand, HAND_RING0, [allPts objectForKey:VNHumanHandPoseObservationJointNameRingMCP  ]);
+                setPoint(hand, HAND_RING1, [allPts objectForKey:VNHumanHandPoseObservationJointNameRingPIP  ]);
+                setPoint(hand, HAND_RING2, [allPts objectForKey:VNHumanHandPoseObservationJointNameRingDIP  ]);
+                setPoint(hand, HAND_RING3, [allPts objectForKey:VNHumanHandPoseObservationJointNameRingTip  ]);
+                setPoint(hand, HAND_PINKY0,[allPts objectForKey:VNHumanHandPoseObservationJointNameLittleMCP]);
+                setPoint(hand, HAND_PINKY1,[allPts objectForKey:VNHumanHandPoseObservationJointNameLittlePIP]);
+                setPoint(hand, HAND_PINKY2,[allPts objectForKey:VNHumanHandPoseObservationJointNameLittleDIP]);
+                setPoint(hand, HAND_PINKY3,[allPts objectForKey:VNHumanHandPoseObservationJointNameLittleTip]);
+                
+                hand.updateRect();
+
+                
+            }
+    }
+        
+    //------------------------------------------------------------------------------------------------------------------------
+    void processTextResults(NSArray*  source, ofxVision::RectsCollection& dest){
+     
+        dest.detections.clear();
+            
+        for(VNRecognizedTextObservation *observation in source){
+            
+            
+            // CGFloat x = imgWidth*observation.boundingBox.origin.x;
+            // CGFloat y = imgHeight*(1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
+            // CGFloat w = imgWidth*observation.boundingBox.size.width;
+            // CGFloat h = imgHeight*observation.boundingBox.size.height;
+            
+            dest.detections.push_back(ofxVision::RectDetection(ofxVisionHelper::toOf(observation.boundingBox), observation.confidence) );
+            
+            VNRecognizedText* recognizedText = [observation topCandidates: 1] [0];
+            
+            dest.detections.back().label += std::string([recognizedText.string UTF8String]);
+            
+            
+        }
+        
+        
+    }
+
+
+#endif
 
 
 ofxVisionDetection::ofxVisionDetection(){
     
 //    NSString * s = [NSString stringWithUTF8String:""];
 //    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: ];
-//    detection = [[Detection alloc] init];
+    detection = [[Detection alloc] init];
 //  tracker = [[Face alloc] init];
 }
 
@@ -30,24 +219,25 @@ bool ofxVisionDetection::loadModel(const std::string& modelPath){
 //const ofPixels&
 void ofxVisionDetection::detect(ofPixels &pix)
 {
-    if(!objectRecognition){
-        ofLogError("ofxVisionDetection::detect", "model not loaded. Call ofxVisionDetection::loadModel(...) before calling this method");
-        return;
-    }
+    
 //    cout << "ofxVisionDetection::detect...";
     CGImageRef image = ofxVisionHelper::CGImageRefFromOfPixels(pix,(int)pix.getWidth(),(int)pix.getHeight(),(int)pix.getNumChannels());
-    
-    if([objectRecognition process:image]){
+    if(!objectRecognition){
+        ofLogError("ofxVisionDetection::detect", "model not loaded. Call ofxVisionDetection::loadModel(...) before calling this method");
+//        return;
+    }else if(recognizeObjects.get() && [objectRecognition process:image]){
         objectDetections.detections.clear();
         for(VNRecognizedObjectObservation *observation in [objectRecognition results]){
             
-            CGFloat x = observation.boundingBox.origin.x;
-            CGFloat y = (1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
-            CGFloat w = observation.boundingBox.size.width;
-            CGFloat h = observation.boundingBox.size.height;
             
             
-            ofxVision::RectDetection det(x,y,w,h,0);
+//            CGFloat x = observation.boundingBox.origin.x;
+//            CGFloat y = (1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
+//            CGFloat w = observation.boundingBox.size.width;
+//            CGFloat h = observation.boundingBox.size.height;
+//            
+            
+            ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
             
             
             if (observation.labels.count > 0){
@@ -58,42 +248,55 @@ void ofxVisionDetection::detect(ofPixels &pix)
             objectDetections.detections.push_back(det);
         }
     }
-//    [detection detect:image
-//         detectAnimal: this->detectAnimal.get()
-//           detectText: this->detectText.get()
-//           detectHand: this->detectHand.get()
-//           detectFace: this->detectFace.get()
-//           detectBody: this->detectBody.get() ];
-//    
-//        float p_w = pix.getWidth();
-//        float p_h = pix.getHeight();
-
-//    if( this->detectFace.get() && !faceResults) { faceResults = std::make_unique<ofxVision::Face>();}
     
-//        if( this->detectAnimal.get() ) { animalResults.processResults([detection animalResults], w, h); }
-//        if( this->detectText.get() ) { textResults.processResults([detection textResults], w, h); }
-//        if( this->detectHand.get() ) { handResults.processResults([detection handResults], w, h); }
-//        if( this->detectFace.get() ) { faceResults->processResults([detection faceResults], p_w, p_h); }
-//        if( this->detectBody.get() ) { bodyResults.processResults([detection bodyResults], w, h); }
-//    cout << "done\n";
-//    points.resize(2);
- 
+    if( detectAnimal.get() || detectText.get() || detectHand.get() || detectFace.get() || detectBody.get() ){
+        [detection detect:image
+             detectAnimal: this->detectAnimal.get()
+               detectText: this->detectText.get()
+               detectHand: this->detectHand.get()
+               detectFace: this->detectFace.get()
+               detectBody: this->detectBody.get() ];
+        //
+//                float p_w = pix.getWidth();
+//                float p_h = pix.getHeight();
+        
+        //    if( this->detectFace.get() && !faceResults) { faceResults = std::make_unique<ofxVision::Face>();}
+        
+        if( this->detectAnimal.get() ) {processAnimalResults([detection animalResults], animalResults);}
+        if( this->detectText.get() ) {processTextResults([detection textResults], textResults);}
+        if( this->detectHand.get() ) {processHandResults([detection handResults], handResults);}
+        if( this->detectFace.get() ) {processFaceResults([detection faceResults], faceResults);}
+        if( this->detectBody.get() ) {processBodyResults([detection bodyResults], bodyResults);}
+        
+
+        
+        
+                // if( this->detectAnimal.get() ) { ofxVision:: animalResults.processResults([detection animalResults]); }
+                // if( this->detectText.get() ) { textResults.processResults([detection textResults]); }
+                // if( this->detectHand.get() ) { handResults.processResults([detection handResults]); }
+                // if( this->detectFace.get() ) { faceResults->processResults([detection faceResults]); }
+                // if( this->detectBody.get() ) { bodyResults.processResults([detection bodyResults]); }
+        //    cout << "done\n";
+        //    points.resize(2);
+    }
     
     
     
     CGImageRelease(image);
 }
 void ofxVisionDetection::draw(const ofRectangle& rect){
-    objectDetections.draw(rect, true, true);
-//    if( this->detectAnimal.get() ) { animalResults.draw(); }
-//    if( this->detectText.get() ) { textResults.draw(); }
-//    if( this->detectHand.get() ) { handResults.draw(); }
-//    if( this->detectFace.get() && faceResults ) { faceResults->draw(); }
-//    if( this->detectBody.get() ) { bodyResults.draw(); }
+    if(recognizeObjects.get()) objectDetections.draw(rect, true, true);
+    if( this->detectAnimal.get() ) { animalResults.draw(rect); }
+    if( this->detectText.get() ) { textResults.draw(rect); }
+    if( this->detectHand.get() ) { handResults.draw(rect); }
+    if( this->detectFace.get() ) { faceResults.draw(rect); }
+    if( this->detectBody.get() ) { bodyResults.draw(rect); }
     
 //    if( this->detectFace.get() ){ faceDetections.draw(); }
     
 }
+
+
 // const ofTexture& ofxVisionDetection::getMaskTexture(){
 //     return segmentationTexture;
 // }
@@ -115,3 +318,4 @@ void ofxVisionDetection::draw(const ofRectangle& rect){
 //     }
 // }
 
+//#endif

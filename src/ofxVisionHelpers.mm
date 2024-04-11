@@ -34,6 +34,9 @@ CGImageRef ofxVisionHelper::CGImageRefFromOfPixels( ofPixels & img, int width, i
   
   return imageRef;
 }
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
 void ofxVisionHelper::ofPixelsFromCVPixelBufferRef(CVPixelBufferRef buff, ofPixels& pixels){
     CVPixelBufferRetain(buff);
     CVPixelBufferLockBaseAddress(buff, 0);
@@ -54,3 +57,12 @@ void ofxVisionHelper::ofPixelsFromCVPixelBufferRef(CVPixelBufferRef buff, ofPixe
     CVPixelBufferUnlockBaseAddress(buff, 0);
     CVPixelBufferRelease(buff);
 }
+
+
+ofRectangle ofxVisionHelper::toOf(const CGRect &rect){
+    return ofRectangle( rect.origin.x,
+    (1-rect.origin.y-rect.size.height),
+    rect.size.width,
+    rect.size.height);
+}
+                

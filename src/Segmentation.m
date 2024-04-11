@@ -15,8 +15,8 @@
     self = [super init];
     if(self) {
         
-        facePoseRequest = [[VNDetectFaceLandmarksRequest alloc] init];
-        facePoseRequest.revision = VNDetectFaceRectanglesRequestRevision3;
+//        facePoseRequest = [[VNDetectFaceLandmarksRequest alloc] init];
+//        facePoseRequest.revision = VNDetectFaceRectanglesRequestRevision3;
         
         segmentationRequest = [VNGeneratePersonSegmentationRequest new];
         segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelBalanced;
@@ -43,7 +43,7 @@
 
 -(CVPixelBufferRef)detect:(CGImageRef)image{
     
-    if([handler  performRequests:@[ facePoseRequest, segmentationRequest] onCGImage: image error:nil]){
+    if([handler  performRequests:@[ segmentationRequest] onCGImage: image error:nil]){
         if( [segmentationRequest.results count ] ){
             if([segmentationRequest.results firstObject]){
                 return [segmentationRequest.results firstObject].pixelBuffer;
@@ -60,5 +60,5 @@
     return nil;
 }
 
--(NSArray * ) faceResults{ return facePoseRequest.results;}
+//-(NSArray * ) faceResults{ return facePoseRequest.results;}
 @end

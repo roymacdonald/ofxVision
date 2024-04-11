@@ -3,7 +3,6 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    
     auto res = ofSystemLoadDialog("choose the model to use");
     if(res.bSuccess){
         if(!detection.loadModel(res.getPath())){
@@ -11,6 +10,8 @@ void ofApp::setup(){
             ofExit();
         }
     }
+
+    gui.setup(detection.parameters);
     
     ofDisableArbTex();
     cam.setup(640, 480);
@@ -35,7 +36,6 @@ void ofApp::setup(){
 void ofApp::update(){
   cam.update();
   if (cam.isFrameNew()){
-//      segmentation.detect(cam.getPixels());
       detection.detect(cam.getPixels());
   }
 }
@@ -45,24 +45,12 @@ void ofApp::draw(){
     
     cam.draw(camRect);
     
-//    segmentation.drawMask(maskRect);
     detection.draw(camRect);
+
     
-   
-    
-//    ofDrawRectangle(compositeRect);
-//    if(segmentation.getMaskTexture().isAllocated()){
-//        shader.begin();
-//        shader.setUniformTexture("imageMask", segmentation.getMaskTexture(), 1);
-//        cam.draw(compositeRect);
-//        shader.end();
-//    }
-//    segmentation.drawFaceDet(camRect);
-//    
-//    
-//    if(bDrawGui){
-//        gui.draw();
-//    }
+    if(bDrawGui){
+        gui.draw();
+    }
 }
 
 
@@ -89,7 +77,7 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    if(key == 'g'){bDrawGui ^= true;}
 }
 
 //--------------------------------------------------------------

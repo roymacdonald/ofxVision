@@ -16,7 +16,7 @@
 
 #endif
 
-#include "ofxVisionDetections.h"
+//#include "ofxVisionResults.h"
 
 
 
@@ -32,7 +32,7 @@ public:
     void drawMask(const glm::vec2& pos, float width, float height);
     void drawMask(float x, float y, float width, float height);
     
-    void drawFaceDet(const ofRectangle& offset);
+//    void drawFaceDet(const ofRectangle& offset);
     
     
     
@@ -42,23 +42,16 @@ public:
     
     ofParameterGroup segmentationParamGroup = {"Segmentation", bSegmentIndividuals, segmentationQuality};
     
-    ofParameter<bool> detectAnimal = {"Detect Animal", false};
-    ofParameter<bool> detectText = {"Detect Text", false};
-    ofParameter<bool> detectHand = {"Detect Hand", false};
-    ofParameter<bool> detectFace = {"Detect Face", true};
-    ofParameter<bool> detectBody = {"Detect Body", false};
     
-    ofParameterGroup detectionParamGroup = {"Detection", detectAnimal, detectText, detectHand, detectFace, detectBody};
-    
-    ofParameterGroup parameters = {"ofxVision", detectionParamGroup, segmentationParamGroup};
+    ofParameterGroup parameters = {"ofxVision",  segmentationParamGroup};
     
     
 protected:
 
     ofEventListener qualityListener;
-    ofxVision::FaceDetectionsCollection faceDet;
+//    ofxVision::FaceDetectionsCollection faceDet;
     
-    void processFaceDet();
+//    void processFaceDet();
     
     ofPixels segmentationMask;
     ofTexture segmentationTexture;

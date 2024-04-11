@@ -1,14 +1,23 @@
 //
-//  ofxVisionDetections.h
+//  ofxVisionResults.h
 //  example
 //
 //  Created by Roy Macdonald on 20-03-24.
 //
 
 #pragma once
+#include "ofxVisionConstants.h"
+
+
 #include "ofMain.h"
 
-#include "constants.h"
+//
+//#ifdef __OBJC__
+//#import <Foundation/Foundation.h>
+//#import <Vision/Vision.h>
+//#endif
+//
+
 
 namespace ofxVision{
 
@@ -18,8 +27,9 @@ class RectDetection{
 public:
     RectDetection(){}
     virtual ~RectDetection(){}
+    RectDetection(const ofRectangle& _rect, float confidence ):rect(_rect), score(confidence){
+    }
     RectDetection(float x, float y, float w, float h, float confidence ):rect(x, y, w, h), score(confidence){
-        
     }
     
     ofRectangle rect;
@@ -63,7 +73,10 @@ public:
     std::string label;
 };
 
+#ifndef __OBJC__
+class VNRecognizedPoint;
 
+#endif
 
 class PointsDetection: public RectDetection{
 public:
@@ -74,9 +87,12 @@ public:
     
     std::vector<glm::vec3> points;
     
-    void setPoint(size_t index, float x, float y, float confidence, float imgWidth, float imgHeight){
-        points[index].x = x * imgWidth;
-        points[index].y = (1- y) * imgHeight;
+    
+//    void setPoint(const size_t&  index, VNRecognizedPoint * point);
+    
+    void setPoint(const size_t& index, float x, float y, float confidence){//}, float imgWidth, float imgHeight){
+        points[index].x = x ;//* imgWidth;
+        points[index].y = (1- y);// * imgHeight;
         points[index].z = confidence;
     }
     
@@ -127,17 +143,44 @@ public:
     
 };
 
-class FaceDetectionsCollection{
+template<class DetectionType>
+class BaseDetectionCollection{
 public:
-    std::vector<FaceDetection> detections;
+    virtual ~BaseDetectionCollection(){}
+    
+    std::vector<DetectionType> detections;
     
     
-    void draw(const ofRectangle& rect){
+    void pushTransformAndStyle(const ofRectangle& rect, const ofColor& color = ofColor::black){
         ofPushMatrix();
         ofTranslate(rect.getTopLeft());
         ofScale(rect.width, rect.height);
         ofPushStyle();
-        ofSetColor(ofColor::black);
+        ofSetColor(color);
+    }
+    
+    void popTransformAndStyle(){
+        ofPopStyle();
+        ofPopMatrix();
+    }
+};
+
+
+class FaceDetectionsCollection:
+public BaseDetectionCollection<FaceDetection>
+{
+public:
+//    std::vector<FaceDetection> detections;
+    
+    
+    void draw(const ofRectangle& rect){
+        if(detections.size() == 0)return;
+        pushTransformAndStyle(rect,ofColor::black);
+//        ofPushMatrix();
+//        ofTranslate(rect.getTopLeft());
+//        ofScale(rect.width, rect.height);
+//        ofPushStyle();
+//        ofSetColor(ofColor::black);
         glPointSize(3);
         for(auto & d: detections){
             d.drawPoints();
@@ -149,34 +192,79 @@ public:
         for(auto & d: detections){
             ofDrawRectangle(d.rect);
         }
-        
-        ofPopStyle();
-        ofPopMatrix();
+        popTransformAndStyle();
+//        ofPopStyle();
+//        ofPopMatrix();
     }
 };
 
-class RectsCollection{
+class RectsCollection:
+public BaseDetectionCollection<RectDetection>
+{
 public:
-    std::vector<RectDetection> detections;
+//    std::vector<RectDetection> detections;
     
     void draw(const glm::vec2& offset, bool bDrawLabel = false, bool bDrawScore = false){
         draw(ofRectangle(offset.x, offset.y,1 ,1), bDrawLabel, bDrawScore);
     }
     void draw(const ofRectangle& rect, bool bDrawLabel = false, bool bDrawScore = false){
-        ofPushMatrix();
-        ofTranslate(rect.getTopLeft());
-        ofScale(rect.width, rect.height);
-        ofPushStyle();
-        ofSetColor(255);
+        if(detections.size() == 0) return;
+            pushTransformAndStyle(rect,ofColor::white);
+//        ofPushMatrix();
+//        ofTranslate(rect.getTopLeft());
+//        ofScale(rect.width, rect.height);
+//        ofPushStyle();
+//        ofSetColor(255);
         ofNoFill();
         for(auto & d: detections){
             d.draw(true, bDrawLabel , bDrawScore );
 //            ofDrawRectangle(d.rect);
         }
-        
-        ofPopStyle();
-        ofPopMatrix();
+        popTransformAndStyle();
+//        ofPopStyle();
+//        ofPopMatrix();
     }
 };
 
+//template<int N>
+class PointsCollection:
+public BaseDetectionCollection<PointsDetection>
+{
+public:
+//    PointsCollection():detections(N){}
+//    std::vector<PointsDetection> detections;
+    
+    void draw(const ofRectangle& rect){
+        if(detections.size() == 0) return;
+        pushTransformAndStyle(rect,ofColor::black);
+//        ofPushMatrix();
+//        ofTranslate(rect.getTopLeft());
+//        ofScale(rect.width, rect.height);
+//        ofPushStyle();
+//        ofSetColor(ofColor::black);
+        glPointSize(3);
+        for(auto & d: detections){
+            d.drawPoints();
+        }
+        popTransformAndStyle();
+//        ofPopStyle();
+//        ofPopMatrix();
+    }
+};
+//
+//#ifndef __OBJC__
+//class NSArray ;
+//#endif
+//
+//
+//static void processAnimalResults(NSArray*  source, RectsCollection&  dest);
+//static void processFaceResults(NSArray*  source, FaceDetectionsCollection& dest);
+//static void processBodyResults(NSArray*  source, PointsCollection& dest);
+//static void processHandResults(NSArray*  source, PointsCollection& dest);
+//static void processTextResults(NSArray*  source, RectsCollection& dest);
+
+
+
+
 }
+

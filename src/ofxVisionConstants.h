@@ -5,8 +5,19 @@
 //  Created by Lingdong Huang on 9/30/22.
 //
 
-#ifndef constants_h
-#define constants_h
+#pragma once
+
+#define OFX_VISION_ENABLE_DETECTION
+
+//#ifdef OFX_VISION_ENABLE_DETECTION
+//
+//#define OFX_VISION_ENABLE_BODY_DETECTION
+//#define OFX_VISION_ENABLE_HAND_DETECTION
+//#define OFX_VISION_ENABLE_TEXT_DETECTION
+//#define OFX_VISION_ENABLE_ANIMAL_DETECTION
+//#define OFX_VISION_ENABLE_FACE_DETECTION
+//
+//#endif
 
 #define MAX_DET 32
 
@@ -60,4 +71,3 @@
 #define TEXT_MAX_DET        256
 #define TEXT_MAX_LEN        256
 
-#endif /* constants_h */

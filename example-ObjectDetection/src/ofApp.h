@@ -29,15 +29,17 @@ class ofApp : public ofBaseApp{
   
     
 //    ofxVisionProcessor segmentation;
+
     ofxVisionDetection detection;
+
     ofRectangle camRect;
     void setViews();
     
 //    ofShader shader;
     
 
-//    ofxPanel gui;
+    ofxPanel gui;
     
-//    bool bDrawGui = true;
+    bool bDrawGui = true;
     
 };
