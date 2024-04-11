@@ -229,14 +229,6 @@ void ofxVisionDetection::detect(ofPixels &pix)
         objectDetections.detections.clear();
         for(VNRecognizedObjectObservation *observation in [objectRecognition results]){
             
-            
-            
-//            CGFloat x = observation.boundingBox.origin.x;
-//            CGFloat y = (1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
-//            CGFloat w = observation.boundingBox.size.width;
-//            CGFloat h = observation.boundingBox.size.height;
-//            
-            
             ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
             
             
@@ -244,7 +236,6 @@ void ofxVisionDetection::detect(ofPixels &pix)
                 det.label =  [observation.labels[0].identifier UTF8String];
                 det.score =  observation.labels[0].confidence ;
             }
-//            det.print();
             objectDetections.detections.push_back(det);
         }
     }
@@ -256,28 +247,12 @@ void ofxVisionDetection::detect(ofPixels &pix)
                detectHand: this->detectHand.get()
                detectFace: this->detectFace.get()
                detectBody: this->detectBody.get() ];
-        //
-//                float p_w = pix.getWidth();
-//                float p_h = pix.getHeight();
-        
-        //    if( this->detectFace.get() && !faceResults) { faceResults = std::make_unique<ofxVision::Face>();}
         
         if( this->detectAnimal.get() ) {processAnimalResults([detection animalResults], animalResults);}
         if( this->detectText.get() ) {processTextResults([detection textResults], textResults);}
         if( this->detectHand.get() ) {processHandResults([detection handResults], handResults);}
         if( this->detectFace.get() ) {processFaceResults([detection faceResults], faceResults);}
         if( this->detectBody.get() ) {processBodyResults([detection bodyResults], bodyResults);}
-        
-
-        
-        
-                // if( this->detectAnimal.get() ) { ofxVision:: animalResults.processResults([detection animalResults]); }
-                // if( this->detectText.get() ) { textResults.processResults([detection textResults]); }
-                // if( this->detectHand.get() ) { handResults.processResults([detection handResults]); }
-                // if( this->detectFace.get() ) { faceResults->processResults([detection faceResults]); }
-                // if( this->detectBody.get() ) { bodyResults.processResults([detection bodyResults]); }
-        //    cout << "done\n";
-        //    points.resize(2);
     }
     
     

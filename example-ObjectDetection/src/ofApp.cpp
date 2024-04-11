@@ -18,17 +18,6 @@ void ofApp::setup(){
 
     setViews();
     
-    
-    
-    
-//    gui.setup(segmentation.parameters);
-    
-
-//    if(ofIsGLProgrammableRenderer()){
-//        shader.load("shadersGL3/shader");
-//    }else{
-//        shader.load("shadersGL2/shader");
-//    }
 
 }
 
@@ -37,6 +26,17 @@ void ofApp::update(){
   cam.update();
   if (cam.isFrameNew()){
       detection.detect(cam.getPixels());
+      /*
+      if(detection.detectHand){
+          auto & hands = detection.getHandResults();
+          //hands.detections.size() gives you the number of detected hands
+          for(auto& hand: hands.detections){
+              // hand.points[HAND_WRIST]. this is a glm::vec3 use the defines in ofxVisionConstants.h to access the different parts of the hand.
+            // the z coordinate contains the confidence value of the detected part. ignore it for calculations or drawing
+                            
+          }
+      }
+      //*/
   }
 }
 
@@ -57,11 +57,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::setViews(){
     
-    // Just getting a fancier layout.
-    
-//    float w =  ofGetWidth()/3;
     ofRectangle leftView(0,0, ofGetWidth(), ofGetHeight());
-//    rightView.set(2 *w, 0, w, ofGetHeight());
     
     camRect.set(0,0,cam.getWidth(), cam.getHeight());
     camRect.scaleTo(leftView);
