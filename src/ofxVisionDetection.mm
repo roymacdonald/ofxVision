@@ -70,11 +70,6 @@ void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecogn
 
 
 
-//    //------------------------------------------------------------------------------------------------------------------------
-//    void setDetection(std::vector<ofxVision::PointsDetection>& detections, size_t index, VNRecognizedPoint * point){
-//        detections.back().setPoint(index, point.location.x, point.location.y, point.confidence);
-//    }
-    
     //------------------------------------------------------------------------------------------------------------------------
     void processBodyResults(NSArray*  source, ofxVision::PointsCollection& dest){
         NSError *err;
@@ -177,13 +172,6 @@ void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecogn
         dest.detections.clear();
             
         for(VNRecognizedTextObservation *observation in source){
-            
-            
-            // CGFloat x = imgWidth*observation.boundingBox.origin.x;
-            // CGFloat y = imgHeight*(1-observation.boundingBox.origin.y-observation.boundingBox.size.height);
-            // CGFloat w = imgWidth*observation.boundingBox.size.width;
-            // CGFloat h = imgHeight*observation.boundingBox.size.height;
-            
             dest.detections.push_back(ofxVision::RectDetection(ofxVisionHelper::toOf(observation.boundingBox), observation.confidence) );
             
             VNRecognizedText* recognizedText = [observation topCandidates: 1] [0];
@@ -201,11 +189,9 @@ void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecogn
 
 
 ofxVisionDetection::ofxVisionDetection(){
-    
-//    NSString * s = [NSString stringWithUTF8String:""];
-//    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: ];
+
     detection = [[Detection alloc] init];
-//  tracker = [[Face alloc] init];
+
 }
 
 bool ofxVisionDetection::loadModel(const std::string& modelPath){
@@ -267,30 +253,5 @@ void ofxVisionDetection::draw(const ofRectangle& rect){
     if( this->detectFace.get() ) { faceResults.draw(rect); }
     if( this->detectBody.get() ) { bodyResults.draw(rect); }
     
-//    if( this->detectFace.get() ){ faceDetections.draw(); }
     
 }
-
-
-// const ofTexture& ofxVisionDetection::getMaskTexture(){
-//     return segmentationTexture;
-// }
-// const ofPixels& ofxVisionDetection::getMask(){
-//     return segmentationMask;
-// }
-
-// void ofxVisionDetection::drawMask(const ofRectangle& rect){
-//     drawMask(rect.x, rect.y, rect.width, rect.height);
-// }
-
-// void ofxVisionDetection::drawMask(const glm::vec2& pos, float width, float height){
-//     drawMask(pos.x, pos.y, width, height);
-// }
-
-// void ofxVisionDetection::drawMask(float x, float y, float width, float height){
-//     if(segmentationTexture.isAllocated()){
-//         segmentationTexture.draw(x, y, width, height);
-//     }
-// }
-
-//#endif
