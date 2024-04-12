@@ -17,7 +17,7 @@
 : NSObject
 {
     
-    VNSequenceRequestHandler *handler;
+//    VNSequenceRequestHandler *handler;
     
     VNRecognizeAnimalsRequest *animalReq;
     VNRecognizeTextRequest *textReq ;

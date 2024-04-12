@@ -27,7 +27,7 @@
 //        faceReq = [VNDetectFaceLandmarksRequest new];
         
         
-        handler = [[VNSequenceRequestHandler alloc] init];
+//        handler = [[VNSequenceRequestHandler alloc] init];
         
     }
     return self;
@@ -62,9 +62,16 @@
     
     NSError *error =nil;
     
-    if([handler  performRequests:requests onCGImage: image error:&error]){
+    NSDictionary *d = [[NSDictionary alloc] init] ;
+    VNImageRequestHandler *handler = [[VNImageRequestHandler alloc] initWithCGImage:image options:d];
+
+    if([handler performRequests:requests error:&error]){
         return YES;
     }
+    
+//    if([handler  performRequests:requests onCGImage: image error:&error]){
+//        return YES;
+//    }
     if (error) {
         NSLog(@"ofxVision::Detection error: %@", [error localizedDescription]);
     }

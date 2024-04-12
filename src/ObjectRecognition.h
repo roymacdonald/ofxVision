@@ -21,7 +21,7 @@
     
     VNCoreMLModel * visionModel;
     
-    VNSequenceRequestHandler *handler;
+//    VNSequenceRequestHandler *handler;
     
     BOOL bModelLoaded;
     

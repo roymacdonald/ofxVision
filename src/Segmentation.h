@@ -17,7 +17,7 @@
 : NSObject
 {
     VNGeneratePersonSegmentationRequest* segmentationRequest;
-    VNSequenceRequestHandler *handler;
+//    VNSequenceRequestHandler *handler;
     float _quality;
 }
 -(void) setQualityLevel:(int)quality;

@@ -18,7 +18,7 @@
         segmentationRequest = [VNGeneratePersonSegmentationRequest new];
         segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelBalanced;
         segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8;
-        handler = [[VNSequenceRequestHandler alloc] init];
+//        handler = [[VNSequenceRequestHandler alloc] init];
         
         _quality = 2;
         
@@ -40,7 +40,13 @@
 
 -(CVPixelBufferRef)detect:(CGImageRef)image{
     
-    if([handler  performRequests:@[ segmentationRequest] onCGImage: image error:nil]){
+    
+    NSDictionary *d = [[NSDictionary alloc] init] ;
+    VNImageRequestHandler *handler = [[VNImageRequestHandler alloc] initWithCGImage:image options:d];
+    NSError *error =nil;
+    
+//    if([handler  performRequests:@[ segmentationRequest] onCGImage: image error:nil]){
+    if([handler performRequests:@[segmentationRequest] error:&error]){
         if( [segmentationRequest.results count ] ){
             if([segmentationRequest.results firstObject]){
                 return [segmentationRequest.results firstObject].pixelBuffer;
@@ -48,7 +54,11 @@
             }
         }
     }
-
+    
+    if (error) {
+        NSLog(@"ofxVision::ObjectRecognition error: %@", [error localizedDescription]);
+    }
+    
     return nil;
 }
 
