@@ -44,7 +44,6 @@ void ofApp::draw(){
         cam.draw(compositeRect);
         shader.end();
     }
-    segmentation.drawFaceDet(camRect);
     
     
     if(bDrawGui){
