@@ -14,6 +14,7 @@
 - (instancetype)init {
     self = [super init];
     if(self) {
+                
         segmentationRequest = [VNGeneratePersonSegmentationRequest new];
         segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelBalanced;
         segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8;
@@ -28,11 +29,11 @@
 -(void) setQualityLevel:(int)quality{
     if(segmentationRequest){
         if(quality <= 1){
-            segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelFast;
+            [segmentationRequest setQualityLevel:VNGeneratePersonSegmentationRequestQualityLevelFast];
         }else if(quality == 2){
-            segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelBalanced;
+            [segmentationRequest setQualityLevel:VNGeneratePersonSegmentationRequestQualityLevelBalanced];
         }else if(quality >= 3){
-            segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelAccurate;
+            [segmentationRequest setQualityLevel:VNGeneratePersonSegmentationRequestQualityLevelAccurate];
         }
     }
 }
