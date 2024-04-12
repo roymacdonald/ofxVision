@@ -3,19 +3,21 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
+    auto res = ofSystemLoadDialog("choose the model to use");
+    if(res.bSuccess){
+        if(!detection.loadModel(res.getPath())){
+            
+            ofExit();
+        }
+    }
+
+    gui.setup(detection.parameters);
+    
     ofDisableArbTex();
     cam.setup(640, 480);
 
     setViews();
     
-    gui.setup(segmentation.parameters);
-    
-
-    if(ofIsGLProgrammableRenderer()){
-        shader.load("shadersGL3/shader");
-    }else{
-        shader.load("shadersGL2/shader");
-    }
 
 }
 
@@ -23,8 +25,33 @@ void ofApp::setup(){
 void ofApp::update(){
   cam.update();
   if (cam.isFrameNew()){
-      segmentation.detect(cam.getPixels());
-
+      detection.detect(cam.getPixels());
+      /*
+      if(detection.detectHand){
+          auto & hands = detection.getHandResults();
+          //hands.detections.size() gives you the number of detected hands
+          for(auto& hand: hands.detections){
+              // hand.points[HAND_WRIST]. this is a glm::vec3 use the defines in ofxVisionConstants.h to access the different parts of the hand.
+            // the z coordinate contains the confidence value of the detected part. ignore it for calculations or drawing
+                            
+          }
+      }
+      //*/
+      /*
+      if(detection.recognizeObjects){
+          
+          
+          for(auto& object : detection.getObjectDetections().detections){
+              /// you can filter here based on any of the following
+              object.label; //std::string
+              object.rect; // ofRectangle // IMPORTANT. the values of these are normalized. you need to multiply by the size of the image in order to get it in pixelspace.
+              object.score; // float. I think it is normalized. higher values mean more possibility that the object is the one in the label
+          }
+          
+          
+      }
+      
+   //*/
   }
 }
 
@@ -33,18 +60,8 @@ void ofApp::draw(){
     
     cam.draw(camRect);
     
-    segmentation.drawMask(maskRect);
-    
-   
-    
-    ofDrawRectangle(compositeRect);
-    if(segmentation.getMaskTexture().isAllocated()){
-        shader.begin();
-        shader.setUniformTexture("imageMask", segmentation.getMaskTexture(), 1);
-        cam.draw(compositeRect);
-        shader.end();
-    }
-    
+    detection.draw(camRect);
+
     
     if(bDrawGui){
         gui.draw();
@@ -55,21 +72,11 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::setViews(){
     
-    // Just getting a fancier layout.
-    
-    float w =  ofGetWidth()/3;
-    leftView.set(0,0, 2 *w, ofGetHeight());
-    rightView.set(2 *w, 0, w, ofGetHeight());
+    ofRectangle leftView(0,0, ofGetWidth(), ofGetHeight());
     
     camRect.set(0,0,cam.getWidth(), cam.getHeight());
     camRect.scaleTo(leftView);
-    
-    maskRect = camRect;
-    maskRect.scaleTo(rightView, OF_ASPECT_RATIO_KEEP,OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_CENTER,  OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_BOTTOM);
-    
-    compositeRect = camRect;
-    compositeRect.scaleTo(rightView, OF_ASPECT_RATIO_KEEP,OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_CENTER,  OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_TOP);
-    
+
     
 }
 
@@ -81,7 +88,7 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    if(key == 'g'){bDrawGui ^= true;}
 }
 
 //--------------------------------------------------------------

@@ -15,7 +15,15 @@ macOS 12+.
 
 Just use with openFrameworks project generator to add to your project. Check the example on how to use. 
 
+### Object detection
+To use the object detection you need to download or train a model.
+you can try with the models in the YOLO section at https://developer.apple.com/machine-learning/models/
+
+
+
+
 ## Important
 
 Make sure that Xcode's Minimum Deployment Target it set to macos 12.0 or higher
 ![](Screenshot.png)
+

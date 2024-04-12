@@ -13,11 +13,16 @@
 
 #ifdef __OBJC__
 #import "Segmentation.h"
+
 #endif
 
-class ofxVisionSegmentation{
+//#include "ofxVisionResults.h"
+
+
+
+class ofxVisionProcessor{
 public:
-    ofxVisionSegmentation();
+    ofxVisionProcessor();
     void detect(ofPixels & image);
 
     const ofPixels& getMask();
@@ -27,8 +32,26 @@ public:
     void drawMask(const glm::vec2& pos, float width, float height);
     void drawMask(float x, float y, float width, float height);
     
-protected:
+//    void drawFaceDet(const ofRectangle& offset);
     
+    
+    
+    
+    ofParameter<bool> bSegmentIndividuals = {"Segment individual persons", false};
+    ofParameter<int> segmentationQuality = {"Quality", 1, 1, 3  };
+    
+    ofParameterGroup segmentationParamGroup = {"Segmentation", bSegmentIndividuals, segmentationQuality};
+    
+    
+    ofParameterGroup parameters = {"ofxVision",  segmentationParamGroup};
+    
+    
+protected:
+
+    ofEventListener qualityListener;
+//    ofxVision::FaceDetectionsCollection faceDet;
+    
+//    void processFaceDet();
     
     ofPixels segmentationMask;
     ofTexture segmentationTexture;
@@ -39,6 +62,7 @@ protected:
     void * segmentation;
 #endif
     
+    int inputImgW, inputImgH;
     
 };
 

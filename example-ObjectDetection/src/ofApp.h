@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxVisionProcessor.h"
-
+//#include "ofxVisionProcessor.h"
+#include "ofxVisionDetection.h"
 #include "ofxGui.h"
 
 class ofApp : public ofBaseApp{
@@ -28,11 +28,14 @@ class ofApp : public ofBaseApp{
     ofVideoGrabber cam;
   
     
-    ofxVisionProcessor segmentation;
-    ofRectangle rightView, leftView, camRect, maskRect, compositeRect;
+//    ofxVisionProcessor segmentation;
+
+    ofxVisionDetection detection;
+
+    ofRectangle camRect;
     void setViews();
     
-    ofShader shader;
+//    ofShader shader;
     
 
     ofxPanel gui;
