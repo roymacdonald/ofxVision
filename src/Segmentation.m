@@ -14,10 +14,6 @@
 - (instancetype)init {
     self = [super init];
     if(self) {
-        
-//        facePoseRequest = [[VNDetectFaceLandmarksRequest alloc] init];
-//        facePoseRequest.revision = VNDetectFaceRectanglesRequestRevision3;
-        
         segmentationRequest = [VNGeneratePersonSegmentationRequest new];
         segmentationRequest.qualityLevel = VNGeneratePersonSegmentationRequestQualityLevelBalanced;
         segmentationRequest.outputPixelFormat = kCVPixelFormatType_OneComponent8;
@@ -50,15 +46,9 @@
                 
             }
         }
-        
-        
-        
-        
     }
-                                
 
     return nil;
 }
 
-//-(NSArray * ) faceResults{ return facePoseRequest.results;}
 @end

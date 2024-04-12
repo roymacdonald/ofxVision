@@ -48,21 +48,10 @@ public:
     
 protected:
     
-    
-//    ofPixels segmentationMask;
-//    ofTexture segmentationTexture;
-    
 #ifdef __OBJC__
     ObjectRecognition * objectRecognition;
     Detection* detection ;
     
-//    ofxVision::Animal  animalResults;
-    
-//    std::unique_ptr<ofxVision::Face>  faceResults = nullptr;
-//    ofxVision::FaceDetectionsCollection faceDetections;
-    
-//
-
     
 #else
     void * objectRecognition;
@@ -72,7 +61,6 @@ protected:
     
     ofxVision::RectsCollection objectDetections;
     
-    //    std::vector<glm::vec3> points;
         ofxVision::RectsCollection  animalResults;
         ofxVision::PointsCollection bodyResults;
         ofxVision::RectsCollection textResults;
