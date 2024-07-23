@@ -23,7 +23,19 @@ namespace ofxVision{
 
 // A bunch of helping classes that only store the data from the detection processes and draws these.
 
-class RectDetection{
+class LabelDetection{
+public:
+    LabelDetection(){}
+    virtual ~LabelDetection(){}
+    LabelDetection(string label, float confidence);
+    std::string label;
+    float score;
+    void drawLabel(glm::vec2 pos, bool bDrawScore = false);
+    void drawLabel(glm::vec3 pos, bool bDrawScore = false);
+    void drawLabel(float x , float y, bool bDrawScore = false);
+};
+
+class RectDetection: public LabelDetection{
 public:
     RectDetection(){}
     virtual ~RectDetection(){}
@@ -31,12 +43,12 @@ public:
     RectDetection(float x, float y, float w, float h, float confidence );
     
     ofRectangle rect;
-    std::string label;
-    float score;
+//    std::string label;
+//    float score;
     
     void draw(bool bDrawRect, bool bDrawLabel, bool bDrawScore);
     void print();
-    void drawLabel(bool bDrawScore = false);
+
     
 };
 
@@ -108,6 +120,13 @@ public BaseDetectionCollection<FaceDetection>
 public:
     
     void draw(const ofRectangle& rect);
+};
+
+class LabelsCollection:
+public BaseDetectionCollection<LabelDetection> 
+{
+public:
+    void draw(float x, float y);
 };
 
 class RectsCollection:
