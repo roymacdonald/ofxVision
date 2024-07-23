@@ -170,43 +170,47 @@ void processTextResults(NSArray*  source, ofxVision::RectsCollection& dest){
         
         
     }
-    
-    
 }
+//------------------------------------------------------------------------------------------------------------------------
 
 ofxVisionDetection::ofxVisionDetection(){
     detection = [[Detection alloc] init];
 }
-
-bool ofxVisionDetection::loadModel(const std::string& modelPath){
-    
-    NSString * s = [NSString stringWithUTF8String:modelPath.c_str()];
-    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s];
-    return (objectRecognition != nil);
-}
+//
+//bool ofxVisionDetection::loadModel(const std::string& modelPath){
+//    
+//    NSString * s = [NSString stringWithUTF8String:modelPath.c_str()];
+//    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s];
+//    
+//    return (objectRecognition != nil);
+//}
 
 void ofxVisionDetection::detect(ofPixels &pix)
 {
     
     //    cout << "ofxVisionDetection::detect...";
     CGImageRef image = ofxVisionHelper::CGImageRefFromOfPixels(pix,(int)pix.getWidth(),(int)pix.getHeight(),(int)pix.getNumChannels());
-    if(!objectRecognition){
-        ofLogError("ofxVisionDetection::detect", "model not loaded. Call ofxVisionDetection::loadModel(...) before calling this method");
-        //        return;
-    }else if(recognizeObjects.get() && [objectRecognition process:image]){
-        objectDetections.detections.clear();
-        for(VNRecognizedObjectObservation *observation in [objectRecognition results]){
-            
-            ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
-            
-            
-            if (observation.labels.count > 0){
-                det.label =  [observation.labels[0].identifier UTF8String];
-                det.score =  observation.labels[0].confidence ;
-            }
-            objectDetections.detections.push_back(det);
-        }
+    if(recognizeObjects.get()) {
+        detect_(image);
     }
+//    if(!objectRecognition){
+//        ofLogError("ofxVisionDetection::detect", "model not loaded. Call ofxVisionDetection::loadModel(...) before calling this method");
+//        //        return;
+//    }else if(recognizeObjects.get() && [objectRecognition process:image]){
+//            rectObjectDetections.detections.clear();
+//            for(VNRecognizedObjectObservation *observation in [objectRecognition results]){
+//                
+//                ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
+//                
+//                //            VNClassificationObservation
+//                if (observation.labels.count > 0){
+//                    det.label =  [observation.labels[0].identifier UTF8String];
+//                    det.score =  observation.labels[0].confidence ;
+//                }
+//                rectObjectDetections.detections.push_back(det);
+//            }
+//        
+//    }
     
     if( detectAnimal.get() || detectText.get() || detectHand.get() || detectFace.get() || detectBody.get() ){
         [detection detect:image
@@ -228,7 +232,7 @@ void ofxVisionDetection::detect(ofPixels &pix)
     CGImageRelease(image);
 }
 void ofxVisionDetection::draw(const ofRectangle& rect){
-    if(recognizeObjects.get()) objectDetections.draw(rect, true, true);
+    if(recognizeObjects.get()) detectionResults.draw(rect, true, true);
     if( this->detectAnimal.get() ) { animalResults.draw(rect); }
     if( this->detectText.get() ) { textResults.draw(rect); }
     if( this->detectHand.get() ) { handResults.draw(rect); }
@@ -237,3 +241,62 @@ void ofxVisionDetection::draw(const ofRectangle& rect){
     
     
 }
+
+//------------------------------------------------------------------------------------------------------------------------
+
+template<typename resultsType>
+bool ofxVisionObjectDetection_<resultsType>::loadModel(const std::string& modelPath){
+    
+    NSString * s = [NSString stringWithUTF8String:modelPath.c_str()];
+    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s];
+    return (objectRecognition != nil);
+    
+}
+    
+
+
+template<typename resultsType>
+void ofxVisionObjectDetection_<resultsType>::detect(ofPixels & pix){
+    
+    //    cout << "ofxVisionDetection::detect...";
+    CGImageRef image = ofxVisionHelper::CGImageRefFromOfPixels(pix,(int)pix.getWidth(),(int)pix.getHeight(),(int)pix.getNumChannels());
+    detect_(image);
+    CGImageRelease(image);
+}
+
+template<typename resultsType>
+void ofxVisionObjectDetection_<resultsType>::detect_(CGImageRef image){
+    if(!objectRecognition){
+        ofLogError("ofxVisionDetection::detect", "model not loaded. Call ofxVisionObjectDetection_::loadModel(...) before calling this method");
+        //        return;
+    }else if([objectRecognition process:image]){
+        processResults( [objectRecognition results]);
+    }
+}
+
+template<>
+void ofxVisionObjectDetection_<ofxVision::RectsCollection>::processResults(NSArray* results){
+    detectionResults.detections.clear();
+        for(VNRecognizedObjectObservation *observation in  results){
+            
+            ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
+            
+            //            VNClassificationObservation
+            if (observation.labels.count > 0){
+                det.label =  [observation.labels[0].identifier UTF8String];
+                det.score =  observation.labels[0].confidence ;
+            }
+            detectionResults.detections.push_back(det);
+        }
+}
+
+template<>
+void ofxVisionObjectDetection_<ofxVision::LabelsCollection>::processResults(NSArray* results){
+    detectionResults.detections.clear();
+    for(VNClassificationObservation *observation in  results){
+        detectionResults.detections.push_back(ofxVision::LabelDetection ([observation.identifier UTF8String], observation.confidence));
+    }
+}
+
+template class ofxVisionObjectDetection_<ofxVision::LabelsCollection>;
+template class ofxVisionObjectDetection_<ofxVision::RectsCollection>;

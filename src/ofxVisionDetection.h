@@ -14,15 +14,49 @@
 
 #import "Detection.h"
 #import "ObjectRecognition.h"
+#import <AVKit/AVKit.h>
 #endif
 
 
 
-class ofxVisionDetection{
+
+template<typename resultsType>
+class ofxVisionObjectDetection_{
+public:
+//    ofxVisionObjectDetection_();
+    virtual void detect(ofPixels & image);
+    
+    ///\brief load a core ML model.
+    ///\param modelPath file path to the model to load
+    ///\param resultsType The type of result that the model will generate. this depends purely on the model you use. For example, yolo uses DETECTION_RECT.
+    ///\return true if successfully loaded, false otherwise
+    bool loadModel(const std::string& modelPath);
+    
+    const resultsType& getDetectionResults(){return detectionResults;}
+    
+protected:
+#ifdef __OBJC__
+    void detect_(CGImageRef image);
+    
+    void processResults(NSArray* results);
+    
+    
+
+    ObjectRecognition * objectRecognition;
+    
+#else
+    void * objectRecognition;
+    
+#endif
+    resultsType detectionResults;
+};
+
+class ofxVisionDetection:
+public ofxVisionObjectDetection_<ofxVision::RectsCollection>
+{
 public:
     ofxVisionDetection();
-    void detect(ofPixels & image);
-
+    virtual void detect(ofPixels & image) override;
 
     ofParameter<bool> detectAnimal = {"Detect Animal", false};
     ofParameter<bool> detectText = {"Detect Text", false};
@@ -35,11 +69,15 @@ public:
     
     void draw(const ofRectangle& rect);
     
-    bool loadModel(const std::string& modelPath);
+    ///\brief load a core ML model.
+    ///\param modelPath file path to the model to load
+    ///\param resultsType The type of result that the model will generate. this depends purely on the model you use. For example, yolo uses DETECTION_RECT.
+    ///\return true if successfully loaded, false otherwise
+//    bool loadModel(const std::string& modelPath);
     
     
     
-    const ofxVision::RectsCollection& getObjectDetections(){return objectDetections;}
+    const ofxVision::RectsCollection& getObjectDetections(){return getDetectionResults();}
     const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
     const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
     const ofxVision::RectsCollection& getTextResults(){return textResults;}
@@ -47,19 +85,19 @@ public:
     const ofxVision::FaceDetectionsCollection& getFaceResults(){return faceResults;}
     
 protected:
-    
+//    ofxVision::DetectionResultsType objectResultsType = ofxVision::DETECTION_RECT_COLLECTION;
 #ifdef __OBJC__
-    ObjectRecognition * objectRecognition;
+//    ObjectRecognition * objectRecognition;
     Detection* detection ;
     
     
 #else
-    void * objectRecognition;
+//    void * objectRecognition;
     void * detection;
 #endif
     
     
-    ofxVision::RectsCollection objectDetections;
+//    ofxVision::RectsCollection rectObjectDetections;
     
         ofxVision::RectsCollection  animalResults;
         ofxVision::PointsCollection bodyResults;
