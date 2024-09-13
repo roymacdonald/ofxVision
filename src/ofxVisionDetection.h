@@ -63,8 +63,9 @@ public:
     ofParameter<bool> detectHand = {"Detect Hand", false};
     ofParameter<bool> detectFace = {"Detect Face", true};
     ofParameter<bool> detectBody = {"Detect Body", false};
+    ofParameter<bool> detectBody3D = {"Detect Body3D", false};
     ofParameter<bool> recognizeObjects = {"Recognize Objects", true};
-    ofParameterGroup parameters = {"ofxVision Detect", recognizeObjects, detectAnimal, detectText, detectHand, detectFace, detectBody};
+    ofParameterGroup parameters = {"ofxVision Detect", recognizeObjects, detectAnimal, detectText, detectHand, detectFace, detectBody, detectBody3D};
     
     
     void draw(const ofRectangle& rect);
@@ -80,6 +81,7 @@ public:
     const ofxVision::RectsCollection& getObjectDetections(){return getDetectionResults();}
     const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
     const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
+    const ofxVision::Body3DCollection& getBody3DResults(){return body3DResults;}
     const ofxVision::RectsCollection& getTextResults(){return textResults;}
     const ofxVision::PointsCollection& getHandResults(){return handResults;}
     const ofxVision::FaceDetectionsCollection& getFaceResults(){return faceResults;}
@@ -101,6 +103,7 @@ protected:
     
         ofxVision::RectsCollection  animalResults;
         ofxVision::PointsCollection bodyResults;
+        ofxVision::Body3DCollection body3DResults;
         ofxVision::RectsCollection textResults;
         ofxVision::PointsCollection handResults;
         ofxVision::FaceDetectionsCollection faceResults;

@@ -24,6 +24,7 @@
         handReq = nil;
         faceReq = nil;
         bodyReq = nil;
+        body3DReq = nil;
 //        faceReq = [VNDetectFaceLandmarksRequest new];
         
         
@@ -36,7 +37,7 @@
 
 
 
--(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody{
+-(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody detectBody3D:(BOOL)bBody3D {
     
     if(!animalReq && bAnimal) { animalReq = [VNRecognizeAnimalsRequest new];}else if(animalReq && !bAnimal){animalReq = nil;}
     if(!textReq && bText ) { textReq  = [VNRecognizeTextRequest new];}else if(textReq && !bText ){textReq = nil;}
@@ -45,6 +46,7 @@
         faceReq.revision = VNDetectFaceRectanglesRequestRevision3;
     }else if(faceReq && !bFace ){faceReq = nil;}
     if(!bodyReq && bBody) { bodyReq = [VNDetectHumanBodyPoseRequest new];}else if(bodyReq && !bBody){bodyReq = nil;}
+    if(!body3DReq && bBody3D) { body3DReq = [[VNDetectHumanBodyPose3DRequest alloc]init];}else if(body3DReq && !bBody3D){body3DReq = nil;}
 
 
     
@@ -55,7 +57,8 @@
     if(handReq != nil) [requests addObject:handReq];
     if(faceReq != nil) [requests addObject:faceReq];
     if(bodyReq != nil) [requests addObject:bodyReq];
-    
+    if(body3DReq != nil) [requests addObject:body3DReq];
+
     if([requests count] == 0) return NO;
     
 //    if([handler  performRequests:@[faceReq] onCGImage: image error:nil]){
@@ -85,6 +88,7 @@
 -(NSArray * ) handResults{ return handReq.results;}
 -(NSArray * ) faceResults{ return faceReq.results;}
 -(NSArray * ) bodyResults{ return bodyReq.results;}
+-(NSArray * ) body3DResults{ return body3DReq.results;}
 
 
 @end
