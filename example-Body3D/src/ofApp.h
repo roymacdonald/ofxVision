@@ -14,11 +14,11 @@ public:
     ofVideoGrabber grabber;
     ofEasyCam camera;
     bool show_3d = false;
-    void setup();
-    void update();
-    void draw();
-    void exit();
 #ifdef TARGET_OPENGLES
+    void setup() override;
+    void update() override;
+    void draw() override;
+    void exit() override;
     void touchDown(ofTouchEventArgs & touch) override;
     void touchMoved(ofTouchEventArgs & touch) override;
     void touchUp(ofTouchEventArgs & touch) override;
@@ -31,6 +31,10 @@ public:
     void deviceOrientationChanged(int newOrientation) override;
     void launchedWithURL(std::string url) override;
 #else
+    void setup();
+    void update();
+    void draw();
+    void exit();
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y);
