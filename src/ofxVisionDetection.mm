@@ -12,78 +12,75 @@
 
 int getBodyPoseIDfromKey(VNHumanBodyPoseObservationJointName joint_name)
 {
-    switch(joint_name){
-        case VNHumanBodyPoseObservationJointNameNose: return BODY_NOSE;
-        case VNHumanBodyPoseObservationJointNameLeftEye: return BODY_LEFTEYE;
-        case VNHumanBodyPoseObservationJointNameRightEye: return BODY_RIGHTEYE;
-        case VNHumanBodyPoseObservationJointNameLeftEar: return BODY_LEFTEAR;
-        case VNHumanBodyPoseObservationJointNameRightEar: return BODY_RIGHTEAR;
-        case VNHumanBodyPoseObservationJointNameLeftWrist: return BODY_LEFTWRIST;
-        case VNHumanBodyPoseObservationJointNameRightWrist: return BODY_RIGHTWRIST;
-        case VNHumanBodyPoseObservationJointNameLeftElbow: return BODY_LEFTELBOW;
-        case VNHumanBodyPoseObservationJointNameRightElbow: return BODY_RIGHTELBOW;
-        case VNHumanBodyPoseObservationJointNameLeftShoulder: return BODY_LEFTSHOULDER;
-        case VNHumanBodyPoseObservationJointNameRightShoulder: return BODY_RIGHTSHOULDER;
-        case VNHumanBodyPoseObservationJointNameLeftHip: return BODY_LEFTHIP;
-        case VNHumanBodyPoseObservationJointNameRightHip: return BODY_RIGHTHIP;
-        case VNHumanBodyPoseObservationJointNameLeftKnee: return BODY_LEFTKNEE;
-        case VNHumanBodyPoseObservationJointNameRightKnee: return BODY_RIGHTKNEE;
-        case VNHumanBodyPoseObservationJointNameLeftAnkle: return BODY_LEFTANKLE;
-        case VNHumanBodyPoseObservationJointNameRightAnkle: return BODY_RIGHTANKLE;
-    }
-    return BODY_N_PART;
+    
+    if (joint_name == VNHumanBodyPoseObservationJointNameNose) { return BODY_NOSE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftEye) { return BODY_LEFTEYE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightEye) { return BODY_RIGHTEYE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftEar) { return BODY_LEFTEAR; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightEar) { return BODY_RIGHTEAR; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftWrist) { return BODY_LEFTWRIST; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightWrist) { return BODY_RIGHTWRIST; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftElbow) { return BODY_LEFTELBOW; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightElbow) { return BODY_RIGHTELBOW; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftShoulder) { return BODY_LEFTSHOULDER; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightShoulder) { return BODY_RIGHTSHOULDER; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftHip) { return BODY_LEFTHIP; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightHip) { return BODY_RIGHTHIP; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftKnee) { return BODY_LEFTKNEE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightKnee) { return BODY_RIGHTKNEE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameLeftAnkle) { return BODY_LEFTANKLE; }
+    else if (joint_name == VNHumanBodyPoseObservationJointNameRightAnkle) { return BODY_RIGHTANKLE; }
+    else { return BODY_N_PART; }
 }
 
 int getBodyPose3DIDfromKey(VNHumanBodyPose3DObservationJointName joint_name)
 {
-    switch(joint_name){
-        case VNHumanBodyPose3DObservationJointNameTopHead: return BODY3D_TOPHEAD;
-        case VNHumanBodyPose3DObservationJointNameCenterHead: return BODY3D_CENTERHEAD;
-        case VNHumanBodyPose3DObservationJointNameCenterShoulder: return BODY3D_CENTERSHOULDER;
-        case VNHumanBodyPose3DObservationJointNameLeftShoulder: return BODY3D_LEFTSHOULDER;
-        case VNHumanBodyPose3DObservationJointNameRightShoulder: return BODY3D_RIGHTSHOULDER;
-        case VNHumanBodyPose3DObservationJointNameLeftElbow: return BODY3D_LEFTELBOW;
-        case VNHumanBodyPose3DObservationJointNameRightElbow: return BODY3D_RIGHTELBOW;
-        case VNHumanBodyPose3DObservationJointNameLeftWrist: return BODY3D_LEFTWRIST;
-        case VNHumanBodyPose3DObservationJointNameRightWrist: return BODY3D_RIGHTWRIST;
-        case VNHumanBodyPose3DObservationJointNameLeftHip: return BODY3D_LEFTHIP;
-        case VNHumanBodyPose3DObservationJointNameRightHip: return BODY3D_RIGHTHIP;
-        case VNHumanBodyPose3DObservationJointNameLeftKnee: return BODY3D_LEFTKNEE;
-        case VNHumanBodyPose3DObservationJointNameRightKnee: return BODY3D_RIGHTKNEE;
-        case VNHumanBodyPose3DObservationJointNameLeftAnkle: return BODY3D_LEFTANKLE;
-        case VNHumanBodyPose3DObservationJointNameRightAnkle: return BODY3D_RIGHTANKLE;
-        case VNHumanBodyPose3DObservationJointNameRoot: return BODY3D_ROOT;
-        case VNHumanBodyPose3DObservationJointNameSpine: return BODY3D_SPINE;
-    }
-    return BODY3D_N_PART;
+    
+    if (joint_name == VNHumanBodyPose3DObservationJointNameTopHead) { return BODY3D_TOPHEAD; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameCenterHead) { return BODY3D_CENTERHEAD; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameCenterShoulder) { return BODY3D_CENTERSHOULDER; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftShoulder) { return BODY3D_LEFTSHOULDER; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightShoulder) { return BODY3D_RIGHTSHOULDER; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftElbow) { return BODY3D_LEFTELBOW; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightElbow) { return BODY3D_RIGHTELBOW; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftWrist) { return BODY3D_LEFTWRIST; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightWrist) { return BODY3D_RIGHTWRIST; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftHip) { return BODY3D_LEFTHIP; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightHip) { return BODY3D_RIGHTHIP; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftKnee) { return BODY3D_LEFTKNEE; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightKnee) { return BODY3D_RIGHTKNEE; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameLeftAnkle) { return BODY3D_LEFTANKLE; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRightAnkle) { return BODY3D_RIGHTANKLE; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameRoot) { return BODY3D_ROOT; }
+    else if (joint_name == VNHumanBodyPose3DObservationJointNameSpine) { return BODY3D_SPINE; }
+    else { return BODY3D_N_PART; }
 }
 
 int getHandPoseIDfromKey(VNHumanHandPoseObservationJointName joint_name)
 {
-    switch(joint_name){
-        case VNHumanHandPoseObservationJointNameWrist: return HAND_WRIST;
-        case VNHumanHandPoseObservationJointNameThumbCMC: return HAND_THUMB0;
-        case VNHumanHandPoseObservationJointNameThumbMP: return HAND_THUMB1;
-        case VNHumanHandPoseObservationJointNameThumbIP: return HAND_THUMB2;
-        case VNHumanHandPoseObservationJointNameThumbTip: return HAND_THUMB3;
-        case VNHumanHandPoseObservationJointNameIndexMCP: return HAND_INDEX0;
-        case VNHumanHandPoseObservationJointNameIndexPIP: return HAND_INDEX1;
-        case VNHumanHandPoseObservationJointNameIndexDIP: return HAND_INDEX2;
-        case VNHumanHandPoseObservationJointNameIndexTip: return HAND_INDEX3;
-        case VNHumanHandPoseObservationJointNameMiddleMCP: return HAND_MIDDLE0;
-        case VNHumanHandPoseObservationJointNameMiddlePIP: return HAND_MIDDLE1;
-        case VNHumanHandPoseObservationJointNameMiddleDIP: return HAND_MIDDLE2;
-        case VNHumanHandPoseObservationJointNameMiddleTip: return HAND_MIDDLE3;
-        case VNHumanHandPoseObservationJointNameRingMCP: return HAND_RING0;
-        case VNHumanHandPoseObservationJointNameRingPIP: return HAND_RING1;
-        case VNHumanHandPoseObservationJointNameRingDIP: return HAND_RING2;
-        case VNHumanHandPoseObservationJointNameRingTip: return HAND_RING3;
-        case VNHumanHandPoseObservationJointNameLittleMCP: return HAND_PINKY0;
-        case VNHumanHandPoseObservationJointNameLittlePIP: return HAND_PINKY1;
-        case VNHumanHandPoseObservationJointNameLittleDIP: return HAND_PINKY2;
-        case VNHumanHandPoseObservationJointNameLittleTip: return HAND_PINKY3;
-    }
-    return HAND_N_PART;
+    
+    if (joint_name == VNHumanHandPoseObservationJointNameWrist) { return HAND_WRIST; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameThumbCMC) { return HAND_THUMB0; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameThumbMP) { return HAND_THUMB1; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameThumbIP) { return HAND_THUMB2; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameThumbTip) { return HAND_THUMB3; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameIndexMCP) { return HAND_INDEX0; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameIndexPIP) { return HAND_INDEX1; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameIndexDIP) { return HAND_INDEX2; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameIndexTip) { return HAND_INDEX3; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameMiddleMCP) { return HAND_MIDDLE0; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameMiddlePIP) { return HAND_MIDDLE1; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameMiddleDIP) { return HAND_MIDDLE2; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameMiddleTip) { return HAND_MIDDLE3; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameRingMCP) { return HAND_RING0; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameRingPIP) { return HAND_RING1; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameRingDIP) { return HAND_RING2; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameRingTip) { return HAND_RING3; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameLittleMCP) { return HAND_PINKY0; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameLittlePIP) { return HAND_PINKY1; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameLittleDIP) { return HAND_PINKY2; }
+    else if (joint_name == VNHumanHandPoseObservationJointNameLittleTip) { return HAND_PINKY3; }
+    else { return HAND_N_PART; }
 }
 
 void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecognizedPoint * point){
