@@ -58,13 +58,6 @@ common:
 	# source files that will be included as c++ files explicitly
 	# ADDON_CPP_SOURCES = 
 	
-	# source files that will be included as objective c files explicitly
-	ADDON_OBJC_SOURCES = src/animal.mm
-	ADDON_OBJC_SOURCES += src/body.mm
-	ADDON_OBJC_SOURCES += src/face.mm
-	ADDON_OBJC_SOURCES += src/hand.mm
-	ADDON_OBJC_SOURCES += src/text.mm
-	
 	# derines that will be passed to the compiler when including this addon
 	# ADDON_DEFINES
 	
