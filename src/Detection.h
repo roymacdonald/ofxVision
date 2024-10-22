@@ -24,7 +24,8 @@
     VNDetectHumanHandPoseRequest *handReq;
     VNDetectFaceLandmarksRequest *faceReq;
     VNDetectHumanBodyPoseRequest *bodyReq;
-    
+    VNDetectHumanBodyPose3DRequest *body3DReq;
+
 }
 
 -(NSArray * ) animalResults;
@@ -32,8 +33,9 @@
 -(NSArray * ) handResults;
 -(NSArray * ) faceResults;
 -(NSArray * ) bodyResults;
+-(NSArray * ) body3DResults;
 
--(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody;
+-(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody detectBody3D:(BOOL) bBody3D;
 
 @end
 

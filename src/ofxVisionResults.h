@@ -83,12 +83,36 @@ protected:
 
 };
 
+class Points3DDetection: public PointsDetection {
+public:
+    Points3DDetection(size_t numPoints):PointsDetection(numPoints), points3D(numPoints), parents(numPoints) {for(auto& p: points3D) {p.setScale(0.2);}}
+    std::vector<ofNode> points3D;
+    std::vector<int> parents;
+    
+//    void setPoint(const size_t& index, float x, float y, float z);
+    void setGlobalPosition(const size_t& index, glm::vec3 position);
+    void setGlobalQuaternion(const size_t& index, glm::quat quat);
+    void setParent(const size_t& index, const size_t& parent_id);
+    void updateMesh();
+    void updateRect();
+    
+    void drawPoints();
+protected:
+};
+
 class FaceDetection: public PointsDetection{
 public:
     FaceDetection():PointsDetection(FACE_N_PART){}
     
     glm::vec3 orientation;
     
+};
+
+class Body3DDetection : public Points3DDetection {
+public:
+    Body3DDetection():Points3DDetection(BODY3D_N_PART){camera.setScale(0.005f);}
+    ofCamera camera;
+    float bodyHeight;
 };
 
 template<class DetectionType>
@@ -123,7 +147,7 @@ public:
 };
 
 class LabelsCollection:
-public BaseDetectionCollection<LabelDetection> 
+public BaseDetectionCollection<LabelDetection>
 {
 public:
     void draw(float x, float y);
@@ -147,5 +171,12 @@ public:
     void draw(const ofRectangle& rect);
 };
 
+class Body3DCollection:
+public BaseDetectionCollection<Body3DDetection>
+{
+public:
+    
+    void draw(const ofRectangle& rect);
+};
 }
 

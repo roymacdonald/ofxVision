@@ -30,24 +30,43 @@
 
 #define BODY_N_PART         17
 
+#define BODY3D_TOPHEAD          0
+#define BODY3D_CENTERHEAD       1
+#define BODY3D_CENTERSHOULDER   2
+#define BODY3D_LEFTSHOULDER     3
+#define BODY3D_RIGHTSHOULDER    4
+#define BODY3D_LEFTELBOW        5
+#define BODY3D_RIGHTELBOW       6
+#define BODY3D_LEFTWRIST        7
+#define BODY3D_RIGHTWRIST       8
+#define BODY3D_LEFTHIP          9
+#define BODY3D_RIGHTHIP         10
+#define BODY3D_LEFTKNEE         11
+#define BODY3D_RIGHTKNEE        12
+#define BODY3D_LEFTANKLE        13
+#define BODY3D_RIGHTANKLE       14
+#define BODY3D_ROOT             15
+#define BODY3D_SPINE            16
 
-#define HAND_WRIST   0     
-#define HAND_THUMB0  1 // ThumbCMC 
-#define HAND_THUMB1  2 // ThumbMP  
-#define HAND_THUMB2  3 // ThumbIP  
-#define HAND_THUMB3  4 // ThumbTip 
-#define HAND_INDEX0  5 // IndexMCP 
-#define HAND_INDEX1  6 // IndexPIP 
-#define HAND_INDEX2  7 // IndexDIP 
-#define HAND_INDEX3  8 // IndexTip 
+#define BODY3D_N_PART       17
+
+#define HAND_WRIST   0
+#define HAND_THUMB0  1 // ThumbCMC
+#define HAND_THUMB1  2 // ThumbMP
+#define HAND_THUMB2  3 // ThumbIP
+#define HAND_THUMB3  4 // ThumbTip
+#define HAND_INDEX0  5 // IndexMCP
+#define HAND_INDEX1  6 // IndexPIP
+#define HAND_INDEX2  7 // IndexDIP
+#define HAND_INDEX3  8 // IndexTip
 #define HAND_MIDDLE0 9 // MiddleMCP
 #define HAND_MIDDLE1 10 // MiddlePIP
 #define HAND_MIDDLE2 11 // MiddleDIP
 #define HAND_MIDDLE3 12 // MiddleTip
-#define HAND_RING0   13 // RingMCP  
-#define HAND_RING1   14 // RingPIP  
-#define HAND_RING2   15 // RingDIP  
-#define HAND_RING3   16 // RingTip  
+#define HAND_RING0   13 // RingMCP
+#define HAND_RING1   14 // RingPIP
+#define HAND_RING2   15 // RingDIP
+#define HAND_RING3   16 // RingTip
 #define HAND_PINKY0  17 // LittleMCP
 #define HAND_PINKY1  18 // LittlePIP
 #define HAND_PINKY2  19 // LittleDIP

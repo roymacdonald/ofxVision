@@ -93,10 +93,76 @@ void PointsDetection::drawPoints(){
 
 //--------------------------------------------------------------------------------------------------------
 
+void Points3DDetection::setGlobalPosition(const size_t& index, glm::vec3 position){//}, float imgWidth, float imgHeight){
+    points3D[index].setGlobalPosition(position);
+}
+void Points3DDetection::setGlobalQuaternion(const size_t& index, glm::quat quat){//}, float imgWidth, float imgHeight){
+    points3D[index].setGlobalOrientation(quat);
+}
+void Points3DDetection::setParent(const size_t& index, const size_t& parent_id){//}, float imgWidth, float imgHeight){
+    if(/*index != parent_id && */index < parents.size() && parent_id < points3D.size())
+    {
+        parents[index] = parent_id;
+//        points3D[index].setParent(points3D[parent_id]);
+    }
+}
+
+void Points3DDetection::updateRect(){
+    bool isFirst = true;
+    for(size_t i = 0; i < BODY3D_N_PART; i++){
+        if(isFirst){
+            rect.set(points[i].x, points[i].y, 0,0);
+            isFirst = false;
+        }else{
+            rect.growToInclude(points[i].x, points[i].y);
+        }
+    }
+    bNeedsMeshUpdate = true;
+}
+
+void Points3DDetection::updateMesh(){
+    pointsMesh.clear();
+    pointsMesh.setMode(OF_PRIMITIVE_LINES);
+    for(size_t i = 0; i < BODY3D_N_PART; i++){
+        pointsMesh.addVertex(glm::vec3(points[i].x,points[i].y,points[i].z));
+        pointsMesh.addColor(ofFloatColor(1.0));
+        pointsMesh.addIndex(i);
+        pointsMesh.addIndex(parents[i]);
+    }
+    bNeedsMeshUpdate = false;
+}
+
+void Points3DDetection::drawPoints(){
+    if(bNeedsMeshUpdate){
+        updateMesh();
+    }
+    pointsMesh.draw();
+}
+
+//--------------------------------------------------------------------------------------------------------
+
 void FaceDetectionsCollection::draw(const ofRectangle& rect){
     if(detections.size() == 0)return;
     pushTransformAndStyle(rect,ofColor::black);
     glPointSize(3);
+    for(auto & d: detections){
+        d.drawPoints();
+    }
+    
+    
+    ofSetColor(255);
+    ofNoFill();
+    for(auto & d: detections){
+        ofDrawRectangle(d.rect);
+    }
+    popTransformAndStyle();
+}
+
+//--------------------------------------------------------------------------------------------------------
+void Body3DCollection::draw(const ofRectangle& rect){
+    if(detections.size() == 0)return;
+    pushTransformAndStyle(rect,ofColor::black);
+//    glPointSize(3);
     for(auto & d: detections){
         d.drawPoints();
     }
