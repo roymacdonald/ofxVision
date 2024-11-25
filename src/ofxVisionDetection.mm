@@ -347,10 +347,10 @@ void ofxVisionDetection::draw(const ofRectangle& rect){
 //------------------------------------------------------------------------------------------------------------------------
 
 template<typename resultsType>
-bool ofxVisionObjectDetection_<resultsType>::loadModel(const std::string& modelPath){
+bool ofxVisionObjectDetection_<resultsType>::loadModel(const std::string& modelPath, bool _loadLabels){
     
     NSString * s = [NSString stringWithUTF8String:modelPath.c_str()];
-    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s];
+    objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s loadLabels:(_loadLabels?YES:NO)];
     return (objectRecognition != nil);
     
 }
@@ -376,11 +376,111 @@ void ofxVisionObjectDetection_<resultsType>::detect_(CGImageRef image){
     }
 }
 
+
+//
+//template<typename resultsType>
+//void ofxVisionObjectDetection_<resultsType>::handleYOLOOutput(VNCoreMLFeatureValueObservation *observation, ofxVision::RectsCollection& collection, float scale, bool bBreakpoint) {
+//    // Get the feature value (output) from the observation
+//    MLFeatureValue *featureValue = observation.featureValue;
+//
+//    // Check if it is an MLMultiArray
+//    if (featureValue.type == MLFeatureTypeMultiArray) {
+//        MLMultiArray *multiArray = featureValue.multiArrayValue;
+//        for(NSNumber * stride in multiArray.strides){
+//            std::cout << "Stride " << stride.intValue <<"\n";
+//        }
+//        
+//        // Get the dimensions of the output array
+//        NSInteger numBoxes = [multiArray.shape[0] integerValue]; // N (number of bounding boxes)
+//        NSInteger numAttributes = [multiArray.shape[1] integerValue]; // Typically 85 for YOLO
+//
+//        // Ensure the dimensions are as expected
+//        if (numAttributes < 5) {
+//            ofLogWarning("ofxVisionObjectDetection::handleYOLOOutput")<< "Unexpected output dimensions.";
+//            return;
+//        }
+//        if(bBreakpoint){
+//            ofLogNotice("break");
+//        }
+//        // Access the raw data pointer (assuming the data type is Float32)
+//        const float *dataPointer = (const float *)multiArray.dataPointer;
+//
+//        // Iterate through each bounding box
+//        for (NSInteger i = 0; i < numBoxes; i++) {
+//            // Extract values from the multi-array
+//            float x = dataPointer[i * numAttributes + 0] / scale;
+//            float y = dataPointer[i * numAttributes + 1] / scale;
+//            float width = dataPointer[i * numAttributes + 2] / scale;
+//            float height = dataPointer[i * numAttributes + 3] / scale;
+//            float confidence = dataPointer[i * numAttributes + 4];
+//            
+//            
+//            // Check if the confidence is above a threshold (e.g., 0.5)
+//            if (confidence > 0.5) {
+//                
+//                ofxVision::RectDetection det;	
+//                det.rect.set(x, y, width, height);
+//                det.score = confidence;
+//                
+//                
+//                //NSLog(@"Box %ld: x=%f, y=%f, width=%f, height=%f, confidence=%f", (long)i, x, y, width, height, confidence);
+//
+//                // Optionally extract class scores and find the highest one
+//                
+////                if(objectRecognition){
+////                    auto labels = [objectRecognition getLabels];
+////                    
+////                    if(labels){
+//                        
+//                        float maxClassScore = 0.0;
+//                        NSInteger maxClassIndex = -1;
+//                        for (NSInteger j = 5; j < numAttributes; j++) {
+//                            float classScore = dataPointer[i * numAttributes + j];
+//                            if (classScore > maxClassScore) {
+//                                maxClassScore = classScore;
+//                                maxClassIndex = j - 5;
+//                            }
+//                        }
+//                        
+//                        if (maxClassIndex >= 0){//} && maxClassIndex < [labels count]) {
+//                            //                    NSLog(@"Detected class %ld with score %f", (long)maxClassIndex, maxClassScore);
+////                            det.label = [[labels objectAtIndex:maxClassIndex] UTF8String];
+//                            det.label = ofToString(maxClassIndex);
+//                            
+//                        }
+////                    }
+////                }
+//                collection.detections.push_back(det);
+//                
+//                
+//            }
+//        }
+//    } else {
+//        NSLog(@"Unexpected feature value type.");
+//    }
+//}
+
+
+template<>
+void ofxVisionObjectDetection_<ofxVision::RectsCollection>::draw(const ofRectangle& rect){
+    detectionResults.draw(rect, true, true);
+}
+
+template<>
+void ofxVisionObjectDetection_<ofxVision::LabelsCollection>::draw(const ofRectangle& rect){
+    detectionResults.draw(rect.x, rect.y);
+}
+
+
+
 template<>
 void ofxVisionObjectDetection_<ofxVision::RectsCollection>::processResults(NSArray* results){
     detectionResults.detections.clear();
-        for(VNRecognizedObjectObservation *observation in  results){
-            
+    
+    for (id object in results) {
+        if ([object isKindOfClass:[VNRecognizedObjectObservation class]]) {
+            //cout << "VNClassificationObservation\n";
+            VNRecognizedObjectObservation *observation = object;
             ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
             
             //            VNClassificationObservation
@@ -389,15 +489,57 @@ void ofxVisionObjectDetection_<ofxVision::RectsCollection>::processResults(NSArr
                 det.score =  observation.labels[0].confidence ;
             }
             detectionResults.detections.push_back(det);
+
+//        }else if ([object isKindOfClass:[VNCoreMLFeatureValueObservation class]]) {
+//            
+//            VNCoreMLFeatureValueObservation* observation = object;
+//            
+////            cout << "observation: " <<[observation.featureName UTF8String] << "\n";
+//            
+//            handleYOLOOutput(observation,detectionResults, drawScale.get(), breakpoint.get());
+////           info = iterateMultiArrayDynamically(observation.featureValue.multiArrayValue);
+//            
+            
+        }else{
+            NSString *className = NSStringFromClass([object class]);
+            cout << "NOT " << [className UTF8String] << "\n";
+        }
+    }
+    
+    
+    
+        for(VNRecognizedObjectObservation *observation in  results){
+            
         }
 }
 
 template<>
 void ofxVisionObjectDetection_<ofxVision::LabelsCollection>::processResults(NSArray* results){
     detectionResults.detections.clear();
-    for(VNClassificationObservation *observation in  results){
-        detectionResults.detections.push_back(ofxVision::LabelDetection ([observation.identifier UTF8String], observation.confidence));
+    
+    for (id object in results) {
+        if ([object isKindOfClass:[VNClassificationObservation class]]) {
+            //cout << "VNClassificationObservation\n";
+            VNClassificationObservation *observation = object;
+            detectionResults.detections.push_back(ofxVision::LabelDetection ([observation.identifier UTF8String], observation.confidence));
+        }else if ([object isKindOfClass:[VNCoreMLFeatureValueObservation class]]) {
+            
+            VNCoreMLFeatureValueObservation* observation = object;
+            
+            
+        }else{
+            NSString *className = NSStringFromClass([object class]);
+            cout << "NOT " << [className UTF8String] << "\n";
+            	
+            
+        }
     }
+    
+    
+    
+//    for(VNClassificationObservation *observation in  results){
+//        detectionResults.detections.push_back(ofxVision::LabelDetection ([observation.identifier UTF8String], observation.confidence));
+//    }
 }
 
 template class ofxVisionObjectDetection_<ofxVision::LabelsCollection>;

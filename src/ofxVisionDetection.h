@@ -23,24 +23,24 @@
 template<typename resultsType>
 class ofxVisionObjectDetection_{
 public:
-//    ofxVisionObjectDetection_();
+    //    ofxVisionObjectDetection_();
     virtual void detect(ofPixels & image);
     
     ///\brief load a core ML model.
     ///\param modelPath file path to the model to load
     ///\param resultsType The type of result that the model will generate. this depends purely on the model you use. For example, yolo uses DETECTION_RECT.
+    ///\param loadLabels load the labels from the MLModel (YOLO has)
     ///\return true if successfully loaded, false otherwise
-    bool loadModel(const std::string& modelPath);
+    bool loadModel(const std::string& modelPath, bool loadLabels = false);
     
     const resultsType& getDetectionResults(){return detectionResults;}
     
+    void draw(const ofRectangle& rect);
 protected:
 #ifdef __OBJC__
     void detect_(CGImageRef image);
     
     void processResults(NSArray* results);
-    
-    
 
     ObjectRecognition * objectRecognition;
     
@@ -76,8 +76,7 @@ public:
     ///\return true if successfully loaded, false otherwise
 //    bool loadModel(const std::string& modelPath);
     
-    
-    
+
     const ofxVision::RectsCollection& getObjectDetections(){return getDetectionResults();}
     const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
     const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
