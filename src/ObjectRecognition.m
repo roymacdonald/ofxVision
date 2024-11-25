@@ -10,54 +10,66 @@
 
 @implementation ObjectRecognition
 
-- (id) initWithModelPath:(NSString *)modelPath {
-//- (instancetype)init {
-    self = [super init];
-    if(self) {
-        
-        bModelLoaded = NO;
-        
-//        NSString * s = [NSString stringWithUTF8String:""];
-        NSString * s = [[modelPath stringByExpandingTildeInPath] stringByResolvingSymlinksInPath];
-        
-        
-        NSError *error =nil;
-        
-//#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_13_0)
-//        [MLModel compileModelAtURL:[NSURL fileURLWithPath:s]
-//                                    completionHandler:^(NSURL *compiledModelURL, NSError *error){
-//            if (error) {
-//                NSLog(@"ObjectRecognition compile MLModel Error: %@", [error localizedDescription]);
-//            }
-//            [self loadModel:compiledModelURL];
-//            
-//        }];
-//        
-//#else
-        
-        NSURL *compiledModelURL = [MLModel compileModelAtURL:[NSURL fileURLWithPath:s] error:&error];
-        if (error) {
-            NSLog(@"ObjectRecognition compile MLModel Error: %@", [error localizedDescription]);
-            return nil;
-        }
-        
-        if(![self loadModel:compiledModelURL]){
-            return nil;
-        }
+- (id) initWithModelPath:(NSString *)modelPath loadLabels:(BOOL)bLoadLabels{
+    
+        self = [super init];
+        if(self) {
             
-        
-        
-//#endif
-
-
-//        handler = [[VNSequenceRequestHandler alloc] init];
-        
-    }
+            bModelLoaded = NO;
+            NSString * s = [[modelPath stringByExpandingTildeInPath] stringByResolvingSymlinksInPath];
+            
+            
+            NSError *error =nil;
+            
+            NSURL *compiledModelURL = [MLModel compileModelAtURL:[NSURL fileURLWithPath:s] error:&error];
+            if (error) {
+                NSLog(@"ObjectRecognition compile MLModel Error: %@", [error localizedDescription]);
+                return nil;
+            }
+            
+            if(![self loadModel:compiledModelURL loadLabels:bLoadLabels]){
+                return nil;
+            }
+        }
+    
     return self;
 }
 
 
--(BOOL) loadModel:(NSURL *)compiledModelURL{
+NSArray<NSString *> *extractClassLabelsFromModel(MLModel *model) {
+    // Get the model description
+    MLModelDescription *modelDescription = model.modelDescription;
+
+    // Check if class labels are available
+    
+    NSDictionary* metadata = [modelDescription.metadata objectForKey:@"MLModelCreatorDefinedKey"];
+    if(metadata){
+        NSString* names = [metadata objectForKey:@"names"];
+        if(names){
+            NSLog(@"Metadata names  %@", names);
+        }
+    }
+    NSArray<id> *classLabels = modelDescription.classLabels;
+    if (classLabels && classLabels.count > 0) {
+        // Convert the class labels to NSString array if needed
+        NSMutableArray<NSString *> *labelArray = [NSMutableArray array];
+        for (id label in classLabels) {
+            if ([label isKindOfClass:[NSString class]]) {
+                [labelArray addObject:(NSString *)label];
+            } else if ([label isKindOfClass:[NSNumber class]]) {
+                // Convert NSNumber to NSString if labels are numeric
+                [labelArray addObject:[(NSNumber *)label stringValue]];
+            }
+        }
+        NSLog(@"Loaded labels count: %d", (int)[labelArray count]);
+        return [labelArray copy];
+    }
+
+    NSLog(@"No class labels found in the model description.");
+    return nil;
+}
+
+-(BOOL) loadModel:(NSURL *)compiledModelURL loadLabels:(BOOL)bLoadLabels{
     
     NSError *error =nil;
     
@@ -78,6 +90,12 @@
     }
     
     objectRecognitionRequest = [[VNCoreMLRequest alloc] initWithModel:visionModel ];
+    
+    if(bLoadLabels){
+        labels = extractClassLabelsFromModel(model);
+    }else{
+        labels = nil;
+    }
     
     bModelLoaded = YES;
     return YES;
@@ -106,7 +124,7 @@
 }
 
 
-
+-(NSArray<NSString *> *) getLabels{ return labels;}
 
 -(NSArray * ) results{ return objectRecognitionRequest.results;}
 @end

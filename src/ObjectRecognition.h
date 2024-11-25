@@ -24,13 +24,14 @@
 //    VNSequenceRequestHandler *handler;
     
     BOOL bModelLoaded;
-    
+
+    NSArray<NSString *> * labels;
 }
 
--(BOOL) loadModel:(NSURL *)compiledModelURL;
 
-- (id) initWithModelPath:(NSString *)modelPath;
+-(BOOL) loadModel:(NSURL *)compiledModelURL  loadLabels:(BOOL)bLoadLabels;
 
+- (id) initWithModelPath:(NSString *)modelPath   loadLabels:(BOOL)bLoadLabels;
 
 
 -(NSArray * ) results;
@@ -38,7 +39,7 @@
 -(BOOL)process:(CGImageRef)image;
 
 
-
+-(NSArray<NSString *> *) getLabels;
 
 @end
 
