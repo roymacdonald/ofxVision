@@ -26,9 +26,11 @@
     BOOL bModelLoaded;
 
     NSArray<NSString *> * labels;
+    NSString * imgsz;
 }
 
 
+- (NSString*) getImgsz;
 -(BOOL) loadModel:(NSURL *)compiledModelURL  loadLabels:(BOOL)bLoadLabels;
 
 - (id) initWithModelPath:(NSString *)modelPath   loadLabels:(BOOL)bLoadLabels;

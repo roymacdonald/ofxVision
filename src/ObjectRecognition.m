@@ -35,6 +35,21 @@
     return self;
 }
 
+NSString * extractImgszFromModel(MLModel* model){
+    // Get the model description
+    MLModelDescription *modelDescription = model.modelDescription;
+
+    // Check if class labels are available
+    
+    NSDictionary* metadata = [modelDescription.metadata objectForKey:@"MLModelCreatorDefinedKey"];
+    if(metadata){
+        NSString * imgsz = [metadata objectForKey:@"imgsz"];
+        if( imgsz){
+            return [ imgsz copy];
+        }
+    }
+    return nil;
+}
 
 NSArray<NSString *> *extractClassLabelsFromModel(MLModel *model) {
     // Get the model description
@@ -97,6 +112,11 @@ NSArray<NSString *> *extractClassLabelsFromModel(MLModel *model) {
         labels = nil;
     }
     
+    imgsz = extractImgszFromModel(model);
+//    NSLog(@"Imgsz: %@ ", imgs	z);
+    
+    
+    
     bModelLoaded = YES;
     return YES;
 }
@@ -127,5 +147,7 @@ NSArray<NSString *> *extractClassLabelsFromModel(MLModel *model) {
 -(NSArray<NSString *> *) getLabels{ return labels;}
 
 -(NSArray * ) results{ return objectRecognitionRequest.results;}
+
+- (NSString*) getImgsz{return imgsz;}
 @end
 
