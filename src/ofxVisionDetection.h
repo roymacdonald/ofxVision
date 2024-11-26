@@ -26,6 +26,7 @@ public:
     //    ofxVisionObjectDetection_();
     virtual void detect(ofPixels & image);
     
+    void detect(ofVideoGrabber& vidGrabber);
     ///\brief load a core ML model.
     ///\param modelPath file path to the model to load
     ///\param resultsType The type of result that the model will generate. this depends purely on the model you use. For example, yolo uses DETECTION_RECT.
@@ -35,7 +36,7 @@ public:
     
     const resultsType& getDetectionResults(){return detectionResults;}
     
-    void draw(const ofRectangle& rect);
+    void draw(ofRectangle rect);
 protected:
 #ifdef __OBJC__
     void detect_(CGImageRef image);
@@ -49,6 +50,18 @@ protected:
     
 #endif
     resultsType detectionResults;
+    
+private:
+    //int requiredInputWidth = 0;
+    //int requiredInputHeight = 0;
+    
+    ofPixels requiredPixels;
+    bool bRemapRects = false;
+    glm::vec2 pixTranslation, pixScaling;
+    
+    
+    std::shared_ptr<ofFbo> helperFbo = nullptr;
+    
 };
 
 class ofxVisionDetection:

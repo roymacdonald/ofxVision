@@ -351,10 +351,101 @@ bool ofxVisionObjectDetection_<resultsType>::loadModel(const std::string& modelP
     
     NSString * s = [NSString stringWithUTF8String:modelPath.c_str()];
     objectRecognition = [[ObjectRecognition alloc] initWithModelPath: s loadLabels:(_loadLabels?YES:NO)];
+    if(objectRecognition){
+        NSString * NSimgsz = [objectRecognition getImgsz];
+        if(NSimgsz){
+            std::string imgsz([NSimgsz UTF8String]);
+            imgsz = ofTrim(imgsz);
+            imgsz.pop_back();
+            imgsz = imgsz.substr(1);
+            auto imgszSplit = ofSplitString(imgsz, ",");
+            if(imgszSplit.size() == 2){
+                int requiredInputWidth = ofToInt(imgszSplit[0]);
+                int requiredInputHeight = ofToInt(imgszSplit[1]);
+                requiredPixels.allocate(requiredInputWidth, requiredInputHeight, 3);
+                requiredPixels.set(0);
+                
+//                ofLogNotice() << "requiredInputWidth: " << requiredInputWidth ;
+//	                ofLogNotice() << "requiredInputHeight: " << requiredInputHeight ;
+                
+                
+            }
+            
+        }
+    }
+    
     return (objectRecognition != nil);
     
 }
     
+
+template<typename resultsType>
+void ofxVisionObjectDetection_<resultsType>::detect(ofVideoGrabber& vidGrabber){
+    ofPixels* pixPtr = nullptr;
+    if(requiredPixels.isAllocated() && requiredPixels.getWidth() > 0 && requiredPixels.getHeight() >0){
+        auto& pix = vidGrabber.getPixels();
+        if(!(pix.getWidth() == requiredPixels.getWidth() && pix.getHeight() == requiredPixels.getHeight())){
+            if(pix.getWidth() == requiredPixels.getWidth() && pix.getHeight() < requiredPixels.getHeight()){
+                requiredPixels.set(0);
+                int y = (requiredPixels.getHeight() - pix.getHeight())/2;
+                pix.pasteInto(requiredPixels, 0, y);
+                pixPtr = &requiredPixels;
+                bRemapRects = true;
+                pixTranslation = {0, y/float(requiredPixels.getHeight())};
+                pixScaling = {1, float(requiredPixels.getHeight())/float( pix.getHeight())};
+//                std::cout << "pastePix\n";
+                
+            }else{
+                ofRectangle srcRect(0,0,pix.getWidth(), pix.getHeight());
+                ofRectangle dstRect(0,0, requiredPixels.getWidth(), requiredPixels.getHeight());
+                
+                srcRect.scaleTo(dstRect);
+                
+                
+                
+                if(!helperFbo){
+                    helperFbo = std::make_shared<ofFbo>();
+                    helperFbo->allocate(requiredPixels.getWidth(), requiredPixels.getHeight());
+                }
+                if(helperFbo){
+                    helperFbo->begin();
+                    ofClear(0, 255);
+                    vidGrabber.draw(srcRect);
+                    helperFbo->end();
+                    helperFbo->readToPixels(requiredPixels);
+                
+                    pixPtr = &requiredPixels;
+                    
+//                    std::cout << "readToPix\n";
+                    
+                    pixTranslation = {srcRect.x/dstRect.getWidth(), srcRect.y/dstRect.getHeight()};
+                    
+                    pixScaling = {requiredPixels.getWidth()/ srcRect.getWidth(), requiredPixels.getHeight()/ srcRect.getHeight()};
+                    
+                    bRemapRects = true;
+                }else{
+                    ofLogWarning("ofxVisionObjectDetection_<resultsType>::detect") << "Invalid helperFbo";
+                }
+            }
+        }else{
+            pixPtr = &pix;
+//            this->detect(pix);
+        }
+    }else{
+        pixPtr = &vidGrabber.getPixels();
+    }
+    
+//    if(bRemapRects){
+//        std::cout << "pixTranslation: " << pixTranslation << "\n";
+//        std::cout << "pixScaling: " << pixScaling << "\n";
+//    }
+    
+    if(pixPtr){
+        this->detect(*pixPtr);
+    }else{
+        ofLogError("ofxVisionObjectDetection_<resultsType>::detect") << "pixPtr is NULL";
+    }
+}
 
 
 template<typename resultsType>
@@ -462,12 +553,19 @@ void ofxVisionObjectDetection_<resultsType>::detect_(CGImageRef image){
 
 
 template<>
-void ofxVisionObjectDetection_<ofxVision::RectsCollection>::draw(const ofRectangle& rect){
+void ofxVisionObjectDetection_<ofxVision::RectsCollection>::draw( ofRectangle rect){
+//    if(bRemapRects){
+//        rect.x -= pixTranslation.x;
+//        rect.y -= pixTranslation.y;
+//        rect.width *= pixScaling.x;
+//        rect.height *= pixScaling.y;
+//    }
+////    
     detectionResults.draw(rect, true, true);
 }
 
 template<>
-void ofxVisionObjectDetection_<ofxVision::LabelsCollection>::draw(const ofRectangle& rect){
+void ofxVisionObjectDetection_<ofxVision::LabelsCollection>::draw( ofRectangle rect){
     detectionResults.draw(rect.x, rect.y);
 }
 
@@ -481,7 +579,21 @@ void ofxVisionObjectDetection_<ofxVision::RectsCollection>::processResults(NSArr
         if ([object isKindOfClass:[VNRecognizedObjectObservation class]]) {
             //cout << "VNClassificationObservation\n";
             VNRecognizedObjectObservation *observation = object;
-            ofxVision::RectDetection det(ofxVisionHelper::toOf(observation.boundingBox),0);
+            auto bb = ofxVisionHelper::toOf(observation.boundingBox);
+            
+            if(bRemapRects){
+                bb.x -= pixTranslation.x;
+                bb.y -= pixTranslation.y;
+                bb.x *= pixScaling.x;
+                bb.y *= pixScaling.y;
+                
+                
+                bb.width *= pixScaling.x;
+                bb.height *= pixScaling.y;
+            }
+
+            
+            ofxVision::RectDetection det(bb,0);
             
             //            VNClassificationObservation
             if (observation.labels.count > 0){
@@ -508,9 +620,9 @@ void ofxVisionObjectDetection_<ofxVision::RectsCollection>::processResults(NSArr
     
     
     
-        for(VNRecognizedObjectObservation *observation in  results){
-            
-        }
+//        for(VNRecognizedObjectObservation *observation in  results){
+//            
+//        }
 }
 
 template<>
