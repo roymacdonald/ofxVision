@@ -12,7 +12,11 @@ void ofApp::setup(){
 #endif
     detection.detectFace.set(false);
     detection.recognizeObjects.set(false);
+#ifdef OFX_VISON_ENABLE_3D_BODY
     detection.detectBody3D.set(true);
+#else
+    ofLogError("ofApp::setup") << "3D body detection is either disabled or not available on your system. needs macos >= 14.0 or ios >= 17.0";
+#endif
 }
 
 //--------------------------------------------------------------

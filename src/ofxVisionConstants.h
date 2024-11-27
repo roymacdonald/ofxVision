@@ -79,3 +79,9 @@
 #define TEXT_MAX_DET        256
 #define TEXT_MAX_LEN        256
 
+
+#include <AvailabilityVersions.h>
+
+#if defined(__TVOS_17_0) || defined(MAC_OS_VERSION_14_0) || defined(__IPHONE_17_0)
+#define OFX_VISON_ENABLE_3D_BODY
+#endif

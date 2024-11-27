@@ -76,9 +76,15 @@ public:
     ofParameter<bool> detectHand = {"Detect Hand", false};
     ofParameter<bool> detectFace = {"Detect Face", true};
     ofParameter<bool> detectBody = {"Detect Body", false};
+#ifdef OFX_VISON_ENABLE_3D_BODY
     ofParameter<bool> detectBody3D = {"Detect Body3D", false};
+#endif
     ofParameter<bool> recognizeObjects = {"Recognize Objects", true};
-    ofParameterGroup parameters = {"ofxVision Detect", recognizeObjects, detectAnimal, detectText, detectHand, detectFace, detectBody, detectBody3D};
+    ofParameterGroup parameters = {"ofxVision Detect", recognizeObjects, detectAnimal, detectText, detectHand, detectFace, detectBody
+#ifdef OFX_VISON_ENABLE_3D_BODY
+        , detectBody3D
+#endif
+    };
     
     
     void draw(const ofRectangle& rect);
@@ -93,7 +99,12 @@ public:
     const ofxVision::RectsCollection& getObjectDetections(){return getDetectionResults();}
     const ofxVision::RectsCollection & getAnimalResults(){return animalResults;}
     const ofxVision::PointsCollection& getBodyResults(){return bodyResults;}
-    const ofxVision::Body3DCollection& getBody3DResults(){return body3DResults;}
+    const ofxVision::Body3DCollection& getBody3DResults(){
+#ifdef OFX_VISON_ENABLE_3D_BODY
+        ofLogError("ofxVision::Body3DCollection& getBody3DResults") << "This feature is not enabled or available on your Macos version";
+#endif
+        return body3DResults;
+    }
     const ofxVision::RectsCollection& getTextResults(){return textResults;}
     const ofxVision::PointsCollection& getHandResults(){return handResults;}
     const ofxVision::FaceDetectionsCollection& getFaceResults(){return faceResults;}

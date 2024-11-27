@@ -32,7 +32,7 @@ int getBodyPoseIDfromKey(VNHumanBodyPoseObservationJointName joint_name)
     else if (joint_name == VNHumanBodyPoseObservationJointNameRightAnkle) { return BODY_RIGHTANKLE; }
     else { return BODY_N_PART; }
 }
-
+#ifdef OFX_VISON_ENABLE_3D_BODY
 int getBodyPose3DIDfromKey(VNHumanBodyPose3DObservationJointName joint_name)
 {
     
@@ -55,7 +55,7 @@ int getBodyPose3DIDfromKey(VNHumanBodyPose3DObservationJointName joint_name)
     else if (joint_name == VNHumanBodyPose3DObservationJointNameSpine) { return BODY3D_SPINE; }
     else { return BODY3D_N_PART; }
 }
-
+#endif
 int getHandPoseIDfromKey(VNHumanHandPoseObservationJointName joint_name)
 {
     
@@ -90,12 +90,12 @@ void setPoint(ofxVision::PointsDetection& points, const size_t&  index, VNRecogn
 void setPoint(ofxVision::Body3DDetection& points, const size_t&  index, VNPoint * point){
     points.setPoint(index, point.x, point.y, 0.0f);
 }
-
+#ifdef OFX_VISON_ENABLE_3D_BODY
 void setPoint3D(ofxVision::Body3DDetection& points, const size_t&  index, VNHumanBodyRecognizedPoint3D* point){
     glm::vec3 position = glm::vec3(point.position.columns[3].x, point.position.columns[3].y, point.position.columns[3].z);
     points.setGlobalPosition(index, position);
 }
-
+#endif
 
 void processAnimalResults(NSArray*  source, ofxVision::RectsCollection&  dest){
     
@@ -175,7 +175,7 @@ void processBodyResults(NSArray*  source, ofxVision::PointsCollection& dest){
         
     }
 }
-
+#ifdef OFX_VISON_ENABLE_3D_BODY
 //------------------------------------------------------------------------------------------------------------------------
 void processBody3DResults(NSArray*  source, ofxVision::Body3DCollection& dest){
     NSError *err;
@@ -220,7 +220,7 @@ void processBody3DResults(NSArray*  source, ofxVision::Body3DCollection& dest){
         
     }
 }
-
+#endif
 
 //------------------------------------------------------------------------------------------------------------------------
 void processHandResults(NSArray*  source, ofxVision::PointsCollection& dest){
@@ -311,21 +311,30 @@ void ofxVisionDetection::detect(ofPixels &pix)
 //        
 //    }
     
-    if( detectAnimal.get() || detectText.get() || detectHand.get() || detectFace.get() || detectBody.get() || detectBody3D.get()){
+    if( detectAnimal.get() || detectText.get() || detectHand.get() || detectFace.get() || detectBody.get()
+#ifdef OFX_VISON_ENABLE_3D_BODY
+       || detectBody3D.get()
+#endif
+       ){
         [detection detect:image
              detectAnimal: this->detectAnimal.get()
                detectText: this->detectText.get()
                detectHand: this->detectHand.get()
                detectFace: this->detectFace.get()
                detectBody: this->detectBody.get()
-               detectBody3D: this->detectBody3D.get()];
+#ifdef OFX_VISON_ENABLE_3D_BODY
+               detectBody3D: this->detectBody3D.get()
+#endif
+        ];
 
         if( this->detectAnimal.get() ) {processAnimalResults([detection animalResults], animalResults);}
         if( this->detectText.get() ) {processTextResults([detection textResults], textResults);}
         if( this->detectHand.get() ) {processHandResults([detection handResults], handResults);}
         if( this->detectFace.get() ) {processFaceResults([detection faceResults], faceResults);}
         if( this->detectBody.get() ) {processBodyResults([detection bodyResults], bodyResults);}
+#ifdef OFX_VISON_ENABLE_3D_BODY
         if( this->detectBody3D.get() ) {processBody3DResults([detection body3DResults], body3DResults);}
+#endif
     }
     
     
@@ -339,8 +348,9 @@ void ofxVisionDetection::draw(const ofRectangle& rect){
     if( this->detectHand.get() ) { handResults.draw(rect); }
     if( this->detectFace.get() ) { faceResults.draw(rect); }
     if( this->detectBody.get() ) { bodyResults.draw(rect); }
+#ifdef OFX_VISON_ENABLE_3D_BODY
     if( this->detectBody3D.get() ) { body3DResults.draw(rect); }
-
+#endif
     
 }
 

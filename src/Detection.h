@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 #import <Vision/Vision.h>
 #import <AVKit/AVKit.h>
-
+#include "ofxVisionConstants.h"
 
 @interface Detection
 : NSObject
@@ -24,8 +24,9 @@
     VNDetectHumanHandPoseRequest *handReq;
     VNDetectFaceLandmarksRequest *faceReq;
     VNDetectHumanBodyPoseRequest *bodyReq;
+#ifdef OFX_VISON_ENABLE_3D_BODY
     VNDetectHumanBodyPose3DRequest *body3DReq;
-
+#endif
 }
 
 -(NSArray * ) animalResults;
@@ -34,8 +35,12 @@
 -(NSArray * ) faceResults;
 -(NSArray * ) bodyResults;
 -(NSArray * ) body3DResults;
-
+#ifdef OFX_VISON_ENABLE_3D_BODY
 -(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody detectBody3D:(BOOL) bBody3D;
+#else
+-(BOOL)detect:(CGImageRef)image detectAnimal:(BOOL) bAnimal detectText:(BOOL) bText detectHand:(BOOL) bHand detectFace:(BOOL) bFace detectBody:(BOOL) bBody;
+#endif
+
 
 @end
 
