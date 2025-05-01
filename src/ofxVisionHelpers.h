@@ -15,8 +15,9 @@
 class ofxVisionHelper{
 public:
     static CGImageRef CGImageRefFromOfPixels( ofPixels & img, int width, int height, int numberOfComponents );
-    
+    static CVPixelBufferRef CVPixelBufferRefFromOfPixels(ofPixels& pixels);
     static void ofPixelsFromCVPixelBufferRef(CVPixelBufferRef buff, ofPixels& pixels);
+    static void ofPixelsFromCVPixelBufferRef(CVPixelBufferRef buff, ofShortPixels& pixels);
   
     static ofRectangle toOf(const CGRect &rect);
     
