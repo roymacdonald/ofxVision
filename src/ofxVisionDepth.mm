@@ -121,9 +121,12 @@ bool ofxVisionDepth::loadModel(const std::string& modelUrl){
 }
 
 //----------------------------------------------------------------------------------------------------
-void ofxVisionDepth::detect(ofPixels& pixels){
+bool ofxVisionDepth::detect(ofPixels& pixels){
     
-    if(!bModelLoaded)return;
+    if(!bModelLoaded){
+        ofLogError("ofxVisionDepth::detect") <<  "Model not loaded!";
+        return false;
+    }
     auto  pixelBuffer = ofxVisionHelper::CVPixelBufferRefFromOfPixels(pixels);
     
           CIContext *ctx = [CIContext contextWithOptions:nil];
@@ -140,14 +143,14 @@ void ofxVisionDepth::detect(ofPixels& pixels){
                                                         error:&err];
       if (!fp) {
           NSLog(@"Input provider error: %@", err);
-          return;// EXIT_FAILURE;
+          return false;
       }
 
       id<MLFeatureProvider> pred =
       [model predictionFromFeatures:fp error:&err];
       if (!pred) {
           NSLog(@"Prediction failed: %@", err);
-          return;// EXIT_FAILURE;
+          return false;
       }
 
 
@@ -155,7 +158,7 @@ void ofxVisionDepth::detect(ofPixels& pixels){
       [[pred featureValueForName:@"depth"] imageBufferValue];
       if (!depthBuf) {
           NSLog(@"No “depth” output in prediction");
-          return;// EXIT_FAILURE;
+          return false;
       }
     
     _pixWidth = pixels.getWidth();
@@ -168,6 +171,7 @@ void ofxVisionDepth::detect(ofPixels& pixels){
     
     CVPixelBufferRelease(pixelBuffer);
     CVPixelBufferRelease(resized);
+    return true;
 }
 //----------------------------------------------------------------------------------------------------
 void ofxVisionDepth::draw(const ofRectangle & rect){

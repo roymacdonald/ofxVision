@@ -39,6 +39,12 @@ Yolo models that need to be exported to CoreML are found [here](https://docs.ult
 
 If you train your own yolo with your own data set you need to point to the correct data yaml file and .pt files.
 
+### Using DepthAnything
+You can use DepthAnything which you can download from [here](https://ml-assets.apple.com/coreml/models/Image/DepthEstimation/DepthAnything/DepthAnythingV2SmallF16.mlpackage.zip)
+
+Try the example-depth-anything and select the downloaded model when the dialog shows.
+
+
 
 ## Important
 

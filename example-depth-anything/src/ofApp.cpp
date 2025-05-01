@@ -22,7 +22,10 @@ void ofApp::setup(){
 void ofApp::update(){
   cam.update();
   if (cam.isFrameNew()){
-      depth.detect(cam.getPixels());
+      if(depth.detect(cam.getPixels())){
+          auto &depthPix = depth.getDepthPixels();
+          //Analyze here the depth pixels. 
+      }
   }
 }
 

@@ -16,13 +16,20 @@
 
 class ofxVisionDepth{
 public:
+    
     bool loadModel(const std::string& modelUrl);
-    void detect(ofPixels& pixels);
+    bool detect(ofPixels& pixels);
     void draw(const ofRectangle & rect = ofRectangle(0,0,0,0));
+    
     static constexpr int resultWidth = 518;
     static constexpr int resultHeight = 392;
+    
+    
+    
+    /// The depth image and pixels are a single channel (grayscale) 16 bit image.
     const ofShortImage& getDepthImage(){return depthImage;}
     const ofShortPixels& getDepthPixels(){return depthImage.getPixels();}
+
 private:
     ofShortImage depthImage;
     bool bPixelsUpdated = false;
